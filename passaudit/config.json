@@ -1,0 +1,29 @@
+{
+    "output_dir": "output",
+    "shadow_file": "data/sample_shadow.txt",
+    "common_passwords": "data/common_passwords.txt",
+    "max_wordlist_size": 50000,
+    "max_attempts": 100000,
+    "default_hash": "md5",
+    "report_format": "both",
+    "ethical_mode": true,
+    "log_level": "INFO",
+    "brute_force": {
+        "max_length": 4,
+        "charset": "lowercase",
+        "speed_demo": 10000
+    },
+    "policy": {
+        "default": "enterprise",
+        "min_length": 12,
+        "max_length": 128,
+        "require_upper": true,
+        "require_lower": true,
+        "require_digit": true,
+        "require_symbol": true,
+        "block_common": true,
+        "block_repeat": true,
+        "block_sequential": true,
+        "min_unique_chars": 6
+    }
+}

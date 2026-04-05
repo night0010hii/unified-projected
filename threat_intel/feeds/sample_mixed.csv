@@ -1,0 +1,21 @@
+type,value,source,notes
+ip,185.220.101.45,csv-feed,Tor exit node C2
+ip,194.165.16.100,csv-feed,Known scanner
+ip,45.142.212.100,csv-feed,Botnet C2
+ip,91.108.4.200,csv-feed,Malware dropper
+ip,80.82.77.139,csv-feed,Shodan scanner
+domain,malware-c2.ru,csv-feed,Active C2 domain
+domain,phishing-login.xyz,csv-feed,Phishing kit
+domain,ransomware-c2-server.net,csv-feed,Ransomware C2
+domain,evil-domain-test.com,csv-feed,Test malicious domain
+url,http://malware-c2.ru/payload.exe,csv-feed,Malware download
+url,http://phishing-login.xyz/steal.php,csv-feed,Credential harvester
+url,http://185.220.101.45/dropper.sh,csv-feed,Shell dropper
+url,https://evil-domain-test.com/gate.php,csv-feed,Gate URL
+hash,44d88612fea8a8f36de82e1278abb02f,csv-feed,Eicar test MD5
+hash,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f,csv-feed,Known malware SHA256
+ip,5.188.86.172,csv-feed,SSH brute force
+ip,103.208.86.8,csv-feed,Web scanner
+domain,wp-admin-login.tk,csv-feed,WordPress brute
+domain,cdn-delivery-node.ru,csv-feed,Fake CDN
+ip,193.32.162.157,csv-feed,RDP scanner

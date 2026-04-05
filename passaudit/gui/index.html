@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>PassAudit — Security Toolkit</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@200;400;600;800;900&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #070b0f;
+            --bg2: #0b1017;
+            --panel: #0f1720;
+            --panel2: #131e2b;
+            --border: #1a2535;
+            --border2: #243244;
+            --cyan: #00e5ff;
+            --red: #ff2d55;
+            --green: #00ff88;
+            --yellow: #ffd60a;
+            --orange: #ff6b35;
+            --text: #b8d4e8;
+            --dim: #3d556e;
+            --dim2: #2a3d52;
+            --mono: 'Share Tech Mono', monospace;
+            --head: 'Orbitron', sans-serif;
+            --body: 'Exo 2', sans-serif;
+            --glow-c: rgba(0, 229, 255, .15);
+            --glow-r: rgba(255, 45, 85, .15);
+            --glow-g: rgba(0, 255, 136, .15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: var(--body);
+            color: var(--text);
+            cursor: default;
+            user-select: none;
+        }
+
+        /* ── SCANLINES ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, .08) 3px, rgba(0, 0, 0, .08) 4px);
+        }
+
+        /* ── PARTICLE CANVAS ── */
+        #canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: .35;
+        }
+
+        /* ── LAYOUT ── */
+        .app {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            grid-template-rows: 52px 1fr;
+            height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            grid-column: 1/-1;
+            background: rgba(7, 11, 15, .9);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            gap: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-family: var(--head);
+            font-size: .85rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--cyan);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            box-shadow: 0 0 10px var(--glow-c);
+        }
+
+        .top-status {
+            display: flex;
+            gap: 1rem;
+            margin-left: auto;
+            align-items: center;
+        }
+
+        .status-pill {
+            font-family: var(--mono);
+            font-size: .6rem;
+            padding: .25rem .7rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            letter-spacing: 1px;
+        }
+
+        .pill-green {
+            background: rgba(0, 255, 136, .1);
+            border: 1px solid rgba(0, 255, 136, .3);
+            color: var(--green);
+        }
+
+        .pill-red {
+            background: rgba(255, 45, 85, .1);
+            border: 1px solid rgba(255, 45, 85, .3);
+            color: var(--red);
+        }
+
+        .pill-yellow {
+            background: rgba(255, 214, 10, .1);
+            border: 1px solid rgba(255, 214, 10, .3);
+            color: var(--yellow);
+        }
+
+        .blink {
+            animation: blink .8s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        .top-time {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--dim);
+            letter-spacing: 2px;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            background: rgba(11, 16, 23, .95);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: .75rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            padding: .5rem 1rem .25rem;
+            font-family: var(--mono);
+            font-size: .55rem;
+            letter-spacing: 3px;
+            color: var(--dim);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .65rem 1.25rem;
+            cursor: pointer;
+            transition: all .2s;
+            border-left: 2px solid transparent;
+            font-family: var(--mono);
+            font-size: .72rem;
+            letter-spacing: 1px;
+            color: var(--dim);
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(0, 229, 255, .04);
+        }
+
+        .nav-item.active {
+            color: var(--cyan);
+            border-left-color: var(--cyan);
+            background: rgba(0, 229, 255, .06);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan);
+        }
+
+        .nav-icon {
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--red);
+            color: #fff;
+            font-size: .5rem;
+            padding: .15rem .4rem;
+            border-radius: 3px;
+            font-family: var(--mono);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .threat-level {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: .75rem;
+        }
+
+        .threat-label {
+            font-family: var(--mono);
+            font-size: .55rem;
+            letter-spacing: 2px;
+            color: var(--dim);
+            margin-bottom: .5rem;
+        }
+
+        .threat-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: .4rem;
+        }
+
+        .threat-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        .threat-text {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--yellow);
+        }
+
+        /* ── MAIN ── */
+        .main {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── PAGE ── */
+        .page {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            animation: fadein .25s ease;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            padding: 1.25rem 1.5rem .75rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-family: var(--head);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .page-subtitle {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--dim);
+            margin-top: .2rem;
+            letter-spacing: 1px;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: .6rem;
+        }
+
+        .btn {
+            font-family: var(--mono);
+            font-size: .65rem;
+            letter-spacing: 2px;
+            padding: .5rem 1rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all .2s;
+        }
+
+        .btn-cyan {
+            background: rgba(0, 229, 255, .15);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 229, 255, .3);
+        }
+
+        .btn-cyan:hover {
+            background: rgba(0, 229, 255, .25);
+            box-shadow: 0 0 12px var(--glow-c);
+        }
+
+        .btn-red {
+            background: rgba(255, 45, 85, .15);
+            color: var(--red);
+            border: 1px solid rgba(255, 45, 85, .3);
+        }
+
+        .btn-red:hover {
+            background: rgba(255, 45, 85, .25);
+        }
+
+        .btn-green {
+            background: rgba(0, 255, 136, .15);
+            color: var(--green);
+            border: 1px solid rgba(0, 255, 136, .3);
+        }
+
+        .btn-green:hover {
+            background: rgba(0, 255, 136, .25);
+            box-shadow: 0 0 12px var(--glow-g);
+        }
+
+        .btn-solid {
+            background: var(--cyan);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .btn-solid:hover {
+            box-shadow: 0 0 20px var(--glow-c);
+            filter: brightness(1.1);
+        }
+
+        /* ── PAGE CONTENT ── */
+        .page-content {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-family: var(--mono);
+            font-size: .7rem;
+            letter-spacing: 2px;
+            color: var(--text);
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        /* ── STAT CARDS ── */
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: .04;
+            background: linear-gradient(135deg, currentColor, transparent);
+        }
+
+        .stat-card.c-cyan {
+            color: var(--cyan);
+        }
+
+        .stat-card.c-red {
+            color: var(--red);
+        }
+
+        .stat-card.c-green {
+            color: var(--green);
+        }
+
+        .stat-card.c-yellow {
+            color: var(--yellow);
+        }
+
+        .stat-num {
+            font-family: var(--head);
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: var(--mono);
+            font-size: .58rem;
+            letter-spacing: 2px;
+            opacity: .6;
+            margin-top: .3rem;
+        }
+
+        .stat-trend {
+            position: absolute;
+            top: .75rem;
+            right: .75rem;
+            font-family: var(--mono);
+            font-size: .6rem;
+        }
+
+        /* ── TERMINAL ── */
+        .terminal {
+            background: #050810;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .term-header {
+            background: var(--panel2);
+            padding: .5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .term-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .term-title {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--dim);
+            margin-left: .25rem;
+        }
+
+        .term-body {
+            padding: .75rem 1rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            line-height: 1.9;
+            min-height: 160px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .term-line {
+            display: flex;
+            gap: .5rem;
+        }
+
+        .t-prompt {
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        .t-cmd {
+            color: var(--green);
+        }
+
+        .t-out {
+            color: var(--text);
+        }
+
+        .t-err {
+            color: var(--red);
+        }
+
+        .t-warn {
+            color: var(--yellow);
+        }
+
+        .t-dim {
+            color: var(--dim);
+        }
+
+        .term-input-row {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--panel2);
+        }
+
+        .term-prompt-label {
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--cyan);
+        }
+
+        .term-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--green);
+        }
+
+        /* ── FORM CONTROLS ── */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+        }
+
+        .form-label {
+            font-family: var(--mono);
+            font-size: .62rem;
+            letter-spacing: 2px;
+            color: var(--dim);
+        }
+
+        .form-input {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            padding: .55rem .8rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, .1);
+        }
+
+        .form-select {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            padding: .55rem .8rem;
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toggle {
+            position: relative;
+            width: 36px;
+            height: 18px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--border2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 3px;
+            top: 3px;
+            background: var(--dim);
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+        .toggle input:checked+.toggle-slider {
+            background: rgba(0, 229, 255, .3);
+        }
+
+        .toggle input:checked+.toggle-slider:before {
+            transform: translateX(18px);
+            background: var(--cyan);
+        }
+
+        .range-input {
+            width: 100%;
+            appearance: none;
+            height: 3px;
+            background: var(--border2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--cyan);
+            cursor: pointer;
+            box-shadow: 0 0 6px var(--glow-c);
+        }
+
+        /* ── PROGRESS BARS ── */
+        .prog-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .prog-cyan {
+            background: linear-gradient(90deg, var(--cyan), #00a3ff);
+        }
+
+        .prog-red {
+            background: linear-gradient(90deg, var(--red), #ff6090);
+        }
+
+        .prog-green {
+            background: linear-gradient(90deg, var(--green), #00cc70);
+        }
+
+        .prog-yellow {
+            background: linear-gradient(90deg, var(--yellow), #ffaa00);
+        }
+
+        /* ── STRENGTH METER ── */
+        .strength-meter {
+            display: flex;
+            gap: 3px;
+            height: 8px;
+            margin: .5rem 0;
+        }
+
+        .strength-seg {
+            flex: 1;
+            border-radius: 2px;
+            background: var(--border);
+            transition: background .4s;
+        }
+
+        .strength-seg.lit.s1 {
+            background: var(--red);
+        }
+
+        .strength-seg.lit.s2 {
+            background: var(--orange);
+        }
+
+        .strength-seg.lit.s3 {
+            background: var(--yellow);
+        }
+
+        .strength-seg.lit.s4 {
+            background: var(--green);
+        }
+
+        .strength-seg.lit.s5 {
+            background: var(--cyan);
+        }
+
+        /* ── BADGE ── */
+        .badge {
+            font-family: var(--mono);
+            font-size: .55rem;
+            letter-spacing: 2px;
+            padding: .2rem .5rem;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .badge-critical {
+            background: rgba(255, 45, 85, .2);
+            color: var(--red);
+            border: 1px solid rgba(255, 45, 85, .4);
+        }
+
+        .badge-weak {
+            background: rgba(255, 107, 53, .2);
+            color: var(--orange);
+            border: 1px solid rgba(255, 107, 53, .4);
+        }
+
+        .badge-moderate {
+            background: rgba(255, 214, 10, .2);
+            color: var(--yellow);
+            border: 1px solid rgba(255, 214, 10, .4);
+        }
+
+        .badge-strong {
+            background: rgba(0, 255, 136, .2);
+            color: var(--green);
+            border: 1px solid rgba(0, 255, 136, .4);
+        }
+
+        .badge-vstrong {
+            background: rgba(0, 229, 255, .2);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 229, 255, .4);
+        }
+
+        /* ── TABLE ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--mono);
+            font-size: .68rem;
+        }
+
+        .data-table th {
+            padding: .5rem .75rem;
+            text-align: left;
+            color: var(--dim);
+            letter-spacing: 2px;
+            font-size: .58rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 400;
+        }
+
+        .data-table td {
+            padding: .6rem .75rem;
+            border-bottom: 1px solid var(--border2);
+            color: var(--text);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .hash-val {
+            color: var(--dim);
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ── WORDLIST OUTPUT ── */
+        .wordlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: .3rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: .5rem;
+        }
+
+        .word-tag {
+            font-family: var(--mono);
+            font-size: .62rem;
+            padding: .25rem .5rem;
+            background: rgba(0, 229, 255, .06);
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            color: var(--text-dim);
+        }
+
+        .word-tag.mutated {
+            color: var(--cyan);
+            border-color: rgba(0, 229, 255, .2);
+        }
+
+        /* ── RADIAL SCORE ── */
+        .radial-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .radial-svg {
+            width: 110px;
+            height: 110px;
+        }
+
+        /* ── REPORT ── */
+        .report-block {
+            background: #050810;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1rem;
+            font-family: var(--mono);
+            font-size: .68rem;
+            line-height: 1.9;
+            max-height: 320px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        /* ── HASH LOOKUP ── */
+        .hash-algo-badge {
+            font-family: var(--mono);
+            font-size: .6rem;
+            padding: .25rem .6rem;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        /* ── NOTIFICATIONS ── */
+        .notif {
+            position: fixed;
+            top: 60px;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .notif-item {
+            background: var(--panel2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: .6rem 1rem;
+            font-family: var(--mono);
+            font-size: .68rem;
+            min-width: 220px;
+            animation: slideIn .3s ease;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(110%);
+                opacity: 0
+            }
+
+            to {
+                transform: none;
+                opacity: 1
+            }
+        }
+
+        .notif-item.n-success {
+            border-left: 3px solid var(--green);
+            color: var(--green);
+        }
+
+        .notif-item.n-error {
+            border-left: 3px solid var(--red);
+            color: var(--red);
+        }
+
+        .notif-item.n-info {
+            border-left: 3px solid var(--cyan);
+            color: var(--cyan);
+        }
+
+        .notif-item.n-warn {
+            border-left: 3px solid var(--yellow);
+            color: var(--yellow);
+        }
+
+        /* ── FILE TREE ── */
+        .file-tree-view {
+            font-family: var(--mono);
+            font-size: .7rem;
+            line-height: 2;
+            padding: 1rem;
+        }
+
+        .ft-folder {
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .ft-py {
+            color: #79b8ff;
+        }
+
+        .ft-json {
+            color: var(--yellow);
+        }
+
+        .ft-txt {
+            color: var(--dim);
+        }
+
+        .ft-md {
+            color: var(--orange);
+        }
+
+        .ft-comment {
+            color: var(--dim);
+            font-style: italic;
+        }
+
+        /* ── CHARTS DIV ── */
+        .mini-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 60px;
+        }
+
+        .bar-col {
+            flex: 1;
+            background: rgba(0, 229, 255, .2);
+            border-radius: 2px 2px 0 0;
+            transition: height .8s ease;
+            min-width: 8px;
+        }
+
+        /* ── ENTROPY DISPLAY ── */
+        .entropy-display {
+            font-family: var(--head);
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dim2);
+            border-radius: 2px;
+        }
+
+        /* ── SEPARATOR ── */
+        .sep {
+            height: 1px;
+            background: var(--border);
+            margin: .25rem 0;
+        }
+
+        .row {
+            display: flex;
+            gap: .75rem;
+            align-items: center;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: .55rem;
+            letter-spacing: 1px;
+            padding: .15rem .45rem;
+            border-radius: 2px;
+            border: 1px solid var(--border2);
+            color: var(--dim);
+        }
+
+        .text-cyan {
+            color: var(--cyan);
+        }
+
+        .text-red {
+            color: var(--red);
+        }
+
+        .text-green {
+            color: var(--green);
+        }
+
+        .text-yellow {
+            color: var(--yellow);
+        }
+
+        .text-dim {
+            color: var(--dim);
+        }
+
+        .small {
+            font-family: var(--mono);
+            font-size: .65rem;
+        }
+
+        .mono {
+            font-family: var(--mono);
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+    <div class="notif" id="notifContainer"></div>
+
+    <div class="app">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="logo">
+                <div class="logo-icon">⚿</div>
+                PASSAUDIT
+            </div>
+            <span style="font-family:var(--mono);font-size:.6rem;color:var(--dim);letter-spacing:2px;">v2.0 // SECURITY
+                ASSESSMENT TOOLKIT</span>
+            <div class="top-status">
+                <div class="status-pill pill-green"><span class="blink">●</span> SYSTEM ONLINE</div>
+                <div class="status-pill pill-yellow"><span>⚡</span> LAB MODE</div>
+                <div class="status-pill pill-red" id="scanStatus" style="display:none"><span class="blink">▶</span>
+                    SCANNING</div>
+                <div class="top-time" id="clockDisplay">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="nav-section">// TOOLKIT</div>
+            <div class="nav-item active" onclick="navigate('dashboard')">
+                <span class="nav-icon">◈</span> DASHBOARD
+            </div>
+            <div class="nav-item" onclick="navigate('dictionary')">
+                <span class="nav-icon">≡</span> DICT GENERATOR
+            </div>
+            <div class="nav-item" onclick="navigate('hash')">
+                <span class="nav-icon">⊞</span> HASH ANALYZER
+            </div>
+            <div class="nav-item" onclick="navigate('bruteforce')">
+                <span class="nav-icon">⚡</span> BRUTEFORCE SIM
+            </div>
+            <div class="nav-item" onclick="navigate('strength')">
+                <span class="nav-icon">◎</span> STRENGTH AUDIT
+            </div>
+            <div class="nav-item" onclick="navigate('entropy')">
+                <span class="nav-icon">∿</span> ENTROPY TOOL
+            </div>
+
+            <div class="nav-section" style="margin-top:.5rem;">// INTELLIGENCE</div>
+            <div class="nav-item" onclick="navigate('hashid')">
+                <span class="nav-icon">⊛</span> HASH IDENTIFIER
+            </div>
+            <div class="nav-item" onclick="navigate('policy')">
+                <span class="nav-icon">⊡</span> POLICY CHECKER
+            </div>
+            <div class="nav-item" onclick="navigate('report')">
+                <span class="nav-icon">⊟</span> AUDIT REPORT
+                <span class="nav-badge" id="reportBadge" style="display:none">NEW</span>
+            </div>
+            <div class="nav-item" onclick="navigate('files')">
+                <span class="nav-icon">⊞</span> FILE STRUCTURE
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="threat-level">
+                    <div class="threat-label">// THREAT LEVEL</div>
+                    <div class="threat-bar">
+                        <div class="threat-fill prog-yellow" id="threatBar" style="width:45%"></div>
+                    </div>
+                    <div class="threat-text" id="threatText">MODERATE — 45%</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN AREA -->
+        <main class="main">
+
+            <!-- ═══════════ DASHBOARD ═══════════ -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">DASHBOARD</div>
+                        <div class="page-subtitle">// SECURITY OVERVIEW — REAL-TIME METRICS</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-cyan" onclick="refreshDashboard()">↻ REFRESH</button>
+                        <button class="btn btn-green" onclick="navigate('report')">⊟ REPORT</button>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-3">
+                        <div class="stat-card c-red">
+                            <div class="stat-num" id="stat-cracked">0</div>
+                            <div class="stat-label">PASSWORDS CRACKED</div>
+                            <div class="stat-trend text-red">↑ SESSION</div>
+                        </div>
+                        <div class="stat-card c-cyan">
+                            <div class="stat-num" id="stat-analyzed">0</div>
+                            <div class="stat-label">HASHES ANALYZED</div>
+                            <div class="stat-trend text-cyan">↑ SESSION</div>
+                        </div>
+                        <div class="stat-card c-yellow">
+                            <div class="stat-num" id="stat-wordlist">0</div>
+                            <div class="stat-label">WORDLIST ENTRIES</div>
+                            <div class="stat-trend text-yellow">GENERATED</div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">STRENGTH DISTRIBUTION</div>
+                                <span class="tag">SESSION</span>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex;flex-direction:column;gap:.6rem;" id="strengthDist">
+                                    <div>
+                                        <div class="row" style="margin-bottom:.2rem;"><span
+                                                class="small text-red">CRITICAL</span><span class="spacer"></span><span
+                                                class="small" id="d-critical">0</span></div>
+                                        <div class="prog-bar">
+                                            <div class="prog-fill prog-red" id="db-critical" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row" style="margin-bottom:.2rem;"><span
+                                                class="small text-yellow">WEAK</span><span class="spacer"></span><span
+                                                class="small" id="d-weak">0</span></div>
+                                        <div class="prog-bar">
+                                            <div class="prog-fill prog-yellow" id="db-weak" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row" style="margin-bottom:.2rem;"><span class="small"
+                                                style="color:var(--orange)">MODERATE</span><span
+                                                class="spacer"></span><span class="small" id="d-moderate">0</span></div>
+                                        <div class="prog-bar">
+                                            <div class="prog-fill" style="background:var(--orange)" id="db-moderate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row" style="margin-bottom:.2rem;"><span
+                                                class="small text-green">STRONG</span><span class="spacer"></span><span
+                                                class="small" id="d-strong">0</span></div>
+                                        <div class="prog-bar">
+                                            <div class="prog-fill prog-green" id="db-strong" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">ACTIVITY LOG</div>
+                                <span class="tag">LIVE</span>
+                            </div>
+                            <div class="card-body" style="padding:0;">
+                                <div id="activityLog"
+                                    style="font-family:var(--mono);font-size:.65rem;max-height:180px;overflow-y:auto;padding:.75rem;">
+                                    <div class="row" style="margin-bottom:.4rem;"><span class="text-dim">──</span><span
+                                            class="text-dim" style="margin-left:.5rem;">No activity yet. Run a module to
+                                            start.</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="terminal">
+                        <div class="term-header">
+                            <div class="term-dot" style="background:#ff5f57;"></div>
+                            <div class="term-dot" style="background:#ffbd2e;"></div>
+                            <div class="term-dot" style="background:#28c840;"></div>
+                            <span class="term-title">passaudit@terminal — live output</span>
+                        </div>
+                        <div class="term-body" id="termOutput">
+                            <div class="term-line"><span class="t-prompt">passaudit$</span><span class="t-cmd">system
+                                    --init</span></div>
+                            <div class="term-line"><span class="t-out"> [✓] PassAudit v2.0 loaded successfully</span>
+                            </div>
+                            <div class="term-line"><span class="t-out"> [✓] Modules: DictGen | HashX | BruteForce |
+                                    Analyzer | Entropy | Policy</span></div>
+                            <div class="term-line"><span class="t-warn"> [!] ETHICAL USE ONLY — Controlled lab
+                                    environment required</span></div>
+                            <div class="term-line"><span class="t-dim">
+                                    ──────────────────────────────────────────────</span></div>
+                            <div class="term-line"><span class="t-prompt">passaudit$</span><span class="t-cmd">_</span>
+                            </div>
+                        </div>
+                        <div class="term-input-row">
+                            <span class="term-prompt-label">passaudit$</span>
+                            <input class="term-input" id="termInput"
+                                placeholder="type command (help, clear, scan, analyze, status)..."
+                                onkeydown="handleTermInput(event)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ DICTIONARY GENERATOR ═══════════ -->
+            <div class="page" id="page-dictionary">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">DICTIONARY GENERATOR</div>
+                        <div class="page-subtitle">// TARGETED WORDLIST BUILDER WITH MUTATION ENGINE</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-cyan" onclick="generateWordlist()">▶ GENERATE</button>
+                        <button class="btn btn-red" onclick="clearWordlist()">✕ CLEAR</button>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">INPUT PARAMETERS</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div class="form-group">
+                                    <div class="form-label">TARGET KEYWORDS (comma separated)</div>
+                                    <input class="form-input" id="dict-keywords"
+                                        placeholder="john, smith, 1990, company..." value="admin, password, john" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">IMPORT NAMES / DATE OF BIRTH</div>
+                                    <div class="form-row">
+                                        <input class="form-input" id="dict-name" placeholder="Full name..." />
+                                        <input class="form-input" id="dict-dob" placeholder="DOB (e.g. 1990)"
+                                            type="text" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">WORDLIST SIZE LIMIT</div>
+                                    <input type="range" class="range-input" id="dict-size" min="100" max="10000"
+                                        value="2000"
+                                        oninput="document.getElementById('dict-size-val').textContent=this.value" />
+                                    <div class="small text-dim" style="margin-top:.3rem;">Max: <span
+                                            id="dict-size-val">2000</span> words</div>
+                                </div>
+                                <div class="sep"></div>
+                                <div class="form-label" style="margin-bottom:.4rem;">MUTATION RULES</div>
+                                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                                    <div class="toggle-row"><span class="small">Leet-speak (a→4, e→3, o→0)</span><label
+                                            class="toggle"><input type="checkbox" id="mut-leet" checked /><span
+                                                class="toggle-slider"></span></label></div>
+                                    <div class="toggle-row"><span class="small">Uppercase variations</span><label
+                                            class="toggle"><input type="checkbox" id="mut-upper" checked /><span
+                                                class="toggle-slider"></span></label></div>
+                                    <div class="toggle-row"><span class="small">Number suffixes
+                                            (1,12,123,2024)</span><label class="toggle"><input type="checkbox"
+                                                id="mut-nums" checked /><span class="toggle-slider"></span></label>
+                                    </div>
+                                    <div class="toggle-row"><span class="small">Symbol suffixes (!,@,#,$)</span><label
+                                            class="toggle"><input type="checkbox" id="mut-syms" checked /><span
+                                                class="toggle-slider"></span></label></div>
+                                    <div class="toggle-row"><span class="small">Keyword combinations</span><label
+                                            class="toggle"><input type="checkbox" id="mut-combo" checked /><span
+                                                class="toggle-slider"></span></label></div>
+                                    <div class="toggle-row"><span class="small">Common password base list</span><label
+                                            class="toggle"><input type="checkbox" id="mut-common" checked /><span
+                                                class="toggle-slider"></span></label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">GENERATED WORDLIST</div>
+                                <span class="small text-cyan" id="wordCount">0 words</span>
+                            </div>
+                            <div class="card-body" style="padding:0;">
+                                <div class="wordlist-grid" id="wordlistOutput">
+                                    <div
+                                        style="padding:1rem;font-family:var(--mono);font-size:.65rem;color:var(--dim);">
+                                        Click GENERATE to build wordlist...</div>
+                                </div>
+                            </div>
+                            <div
+                                style="padding:.75rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                                <span class="small text-dim" id="dictStats">—</span>
+                                <button class="btn btn-cyan" onclick="exportWordlist()" style="font-size:.58rem;">⬇
+                                    EXPORT .TXT</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">MUTATION PREVIEW</div>
+                        </div>
+                        <div class="card-body">
+                            <div id="mutationPreview"
+                                style="font-family:var(--mono);font-size:.7rem;line-height:2;color:var(--dim);">
+                                Enter keywords and click GENERATE to see mutations applied...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ HASH ANALYZER ═══════════ -->
+            <div class="page" id="page-hash">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">HASH ANALYZER</div>
+                        <div class="page-subtitle">// EXTRACT, IDENTIFY & ANALYZE PASSWORD HASHES</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-cyan" onclick="analyzeHashes()">▶ ANALYZE</button>
+                        <button class="btn btn-green" onclick="loadDemoHashes()">⊞ LOAD DEMO</button>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">HASH INPUT</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div class="form-group">
+                                    <div class="form-label">PASTE HASHES (one per line, or shadow format)</div>
+                                    <textarea class="form-input" id="hashInput" rows="8" style="resize:vertical;"
+                                        placeholder="5f4dcc3b5aa765d61d8327deb882cf99&#10;root:$6$salt$hash:19000:0:99999:7:::&#10;admin:$1$salt$hash..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">SOURCE TYPE</div>
+                                    <select class="form-select" id="hashSource">
+                                        <option value="plain">Plain Hashes</option>
+                                        <option value="shadow">Linux /etc/shadow</option>
+                                        <option value="sam">Windows SAM (NTLM)</option>
+                                        <option value="mixed">Auto-detect (Mixed)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">ANALYSIS RESULTS</div>
+                            </div>
+                            <div class="card-body" style="padding:0;">
+                                <table class="data-table" id="hashTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>USER</th>
+                                            <th>ALGORITHM</th>
+                                            <th>HASH (PREVIEW)</th>
+                                            <th>RISK</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="hashTableBody">
+                                        <tr>
+                                            <td colspan="5" style="text-align:center;color:var(--dim);padding:1.5rem;">
+                                                Load demo or paste hashes to analyze</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">ALGORITHM BREAKDOWN</div>
+                        </div>
+                        <div class="card-body">
+                            <div id="algoBreakdown"
+                                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;">
+                                <div style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">Run analysis to
+                                    see algorithm distribution...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ BRUTE FORCE ═══════════ -->
+            <div class="page" id="page-bruteforce">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-red">BRUTE-FORCE SIMULATOR</div>
+                        <div class="page-subtitle">// CRACK TIME ESTIMATION & DICTIONARY ATTACK SIMULATION</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-red" id="bfStartBtn" onclick="startBruteforce()">▶ START SIM</button>
+                        <button class="btn btn-cyan" onclick="stopBruteforce()" id="bfStopBtn" style="display:none">■
+                            STOP</button>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">ATTACK CONFIGURATION</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div class="form-group">
+                                    <div class="form-label">TARGET HASH</div>
+                                    <input class="form-input" id="bf-hash"
+                                        placeholder="Enter MD5/SHA hash or type 'demo'..." value="demo" />
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">ATTACK MODE</div>
+                                    <select class="form-select" id="bf-mode">
+                                        <option value="dictionary">Dictionary Attack</option>
+                                        <option value="incremental">Incremental (a-z)</option>
+                                        <option value="hybrid">Hybrid (Dict + Rules)</option>
+                                        <option value="estimate">Estimate Only (No Attack)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">HASH ALGORITHM</div>
+                                    <select class="form-select" id="bf-algo">
+                                        <option value="md5">MD5</option>
+                                        <option value="sha1">SHA-1</option>
+                                        <option value="sha256">SHA-256</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label">SIMULATION SPEED</div>
+                                    <select class="form-select" id="bf-speed">
+                                        <option value="1000">1,000 h/s (demo)</option>
+                                        <option value="10000">10,000 h/s (fast demo)</option>
+                                        <option value="100000">100,000 h/s (ultra)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">SIMULATION STATUS</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+                                <div>
+                                    <div class="row" style="margin-bottom:.4rem;">
+                                        <span class="form-label">PROGRESS</span>
+                                        <span class="spacer"></span>
+                                        <span class="small text-cyan" id="bfPercent">0%</span>
+                                    </div>
+                                    <div class="prog-bar" style="height:10px;">
+                                        <div class="prog-fill prog-red" id="bfProgress"
+                                            style="width:0%;transition:width .1s;"></div>
+                                    </div>
+                                </div>
+                                <div class="grid-2" style="gap:.5rem;">
+                                    <div
+                                        style="background:var(--bg2);padding:.6rem;border-radius:3px;border:1px solid var(--border2);">
+                                        <div class="form-label">ATTEMPTS</div>
+                                        <div class="text-cyan mono" id="bfAttempts">0</div>
+                                    </div>
+                                    <div
+                                        style="background:var(--bg2);padding:.6rem;border-radius:3px;border:1px solid var(--border2);">
+                                        <div class="form-label">SPEED</div>
+                                        <div class="text-green mono" id="bfSpeed">0 h/s</div>
+                                    </div>
+                                    <div
+                                        style="background:var(--bg2);padding:.6rem;border-radius:3px;border:1px solid var(--border2);">
+                                        <div class="form-label">STATUS</div>
+                                        <div class="text-yellow mono" id="bfStatus">IDLE</div>
+                                    </div>
+                                    <div
+                                        style="background:var(--bg2);padding:.6rem;border-radius:3px;border:1px solid var(--border2);">
+                                        <div class="form-label">RESULT</div>
+                                        <div class="text-red mono" id="bfResult">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crack Time Estimator -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">⚡ CRACK TIME ESTIMATOR</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" style="gap:1rem;flex-wrap:wrap;">
+                                <div class="form-group" style="flex:1;min-width:200px;">
+                                    <div class="form-label">TEST PASSWORD</div>
+                                    <input class="form-input" id="cte-password" placeholder="Enter any password..."
+                                        oninput="estimateCrackTime()" />
+                                </div>
+                            </div>
+                            <div id="crackTimeResults"
+                                style="margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;">
+                                <div style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">Type a password
+                                    above to see crack time estimates...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="terminal">
+                        <div class="term-header">
+                            <div class="term-dot" style="background:#ff5f57;"></div>
+                            <div class="term-dot" style="background:#ffbd2e;"></div>
+                            <div class="term-dot" style="background:#28c840;"></div>
+                            <span class="term-title">bruteforce — simulation log</span>
+                        </div>
+                        <div class="term-body" id="bfTermOutput">
+                            <div class="term-line"><span class="t-dim">Waiting for simulation to start...</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ STRENGTH AUDIT ═══════════ -->
+            <div class="page" id="page-strength">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">STRENGTH AUDIT</div>
+                        <div class="page-subtitle">// PASSWORD COMPLEXITY, ENTROPY & POLICY ASSESSMENT</div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">PASSWORD INPUT</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-label">ENTER PASSWORD TO ANALYZE</div>
+                                <input class="form-input" id="sa-password" placeholder="Type any password..."
+                                    oninput="analyzeStrength()" style="font-size:.9rem;letter-spacing:2px;" />
+                            </div>
+                            <div class="strength-meter" id="strengthMeter">
+                                <div class="strength-seg s1" id="seg1"></div>
+                                <div class="strength-seg s2" id="seg2"></div>
+                                <div class="strength-seg s3" id="seg3"></div>
+                                <div class="strength-seg s4" id="seg4"></div>
+                                <div class="strength-seg s5" id="seg5"></div>
+                            </div>
+                            <div class="row" style="margin-top:.25rem;">
+                                <span class="small text-dim" id="strengthLabel">Enter a password...</span>
+                                <span class="spacer"></span>
+                                <span class="small" id="strengthScore"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">COMPLEXITY METRICS</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div>
+                                    <div class="row" style="margin-bottom:.3rem;"><span class="small">Length</span><span
+                                            class="spacer"></span><span class="small text-cyan" id="m-length">—</span>
+                                    </div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill prog-cyan" id="mb-length" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row" style="margin-bottom:.3rem;"><span
+                                            class="small">Lowercase</span><span class="spacer"></span><span
+                                            class="small" id="m-lower">—</span></div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill prog-green" id="mb-lower" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row" style="margin-bottom:.3rem;"><span
+                                            class="small">Uppercase</span><span class="spacer"></span><span
+                                            class="small" id="m-upper">—</span></div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill prog-yellow" id="mb-upper" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row" style="margin-bottom:.3rem;"><span
+                                            class="small">Numbers</span><span class="spacer"></span><span class="small"
+                                            id="m-nums">—</span></div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill prog-red" id="mb-nums" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row" style="margin-bottom:.3rem;"><span
+                                            class="small">Symbols</span><span class="spacer"></span><span class="small"
+                                            id="m-syms">—</span></div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill prog-cyan" id="mb-syms" style="width:0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">AUDIT FINDINGS</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.5rem;"
+                                id="auditFindings">
+                                <div class="small text-dim">Enter a password to see findings...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Analyzer -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">BULK PASSWORD AUDIT</div>
+                            <button class="btn btn-cyan" onclick="bulkAnalyze()" style="font-size:.58rem;">▶ ANALYZE
+                                ALL</button>
+                        </div>
+                        <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                            <div class="form-group">
+                                <div class="form-label">PASTE MULTIPLE PASSWORDS (one per line)</div>
+                                <textarea class="form-input" id="bulk-passwords" rows="4"
+                                    placeholder="password123&#10;Admin@2024&#10;qwerty&#10;Tr0ub4dor&3"></textarea>
+                            </div>
+                            <div id="bulkResults" style="display:none;">
+                                <table class="data-table" id="bulkTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>PASSWORD</th>
+                                            <th>SCORE</th>
+                                            <th>ENTROPY</th>
+                                            <th>RATING</th>
+                                            <th>ISSUES</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bulkTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ ENTROPY TOOL ═══════════ -->
+            <div class="page" id="page-entropy">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">ENTROPY CALCULATOR</div>
+                        <div class="page-subtitle">// SHANNON ENTROPY & CHARSET ANALYSIS</div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">INPUT</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-label">PASSWORD / STRING TO ANALYZE</div>
+                                <input class="form-input" id="ent-input" placeholder="Enter text..."
+                                    oninput="calcEntropy()" style="font-size:1rem;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="stat-card c-cyan" style="text-align:center;">
+                            <div class="stat-num" id="ent-total">0</div>
+                            <div class="stat-label">TOTAL ENTROPY BITS</div>
+                        </div>
+                        <div class="stat-card c-green" style="text-align:center;">
+                            <div class="stat-num" id="ent-per">0</div>
+                            <div class="stat-label">BITS PER CHARACTER</div>
+                        </div>
+                        <div class="stat-card c-yellow" style="text-align:center;">
+                            <div class="stat-num" id="ent-charset">0</div>
+                            <div class="stat-label">CHARSET SIZE</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">CHARACTER FREQUENCY MAP</div>
+                        </div>
+                        <div class="card-body">
+                            <div id="freqMap"
+                                style="font-family:var(--mono);font-size:.68rem;display:flex;flex-wrap:wrap;gap:.4rem;">
+                                <span class="text-dim">Enter text to see character frequency analysis...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">ENTROPY SCALE REFERENCE</div>
+                        </div>
+                        <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
+                            <div>
+                                <div class="row" style="margin-bottom:.2rem;"><span class="small text-red">0–28
+                                        bits</span><span class="spacer"></span><span class="small">Very Weak</span>
+                                </div>
+                                <div class="prog-bar">
+                                    <div class="prog-fill prog-red" style="width:20%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="row" style="margin-bottom:.2rem;"><span class="small text-yellow">28–36
+                                        bits</span><span class="spacer"></span><span class="small">Weak</span></div>
+                                <div class="prog-bar">
+                                    <div class="prog-fill prog-yellow" style="width:40%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="row" style="margin-bottom:.2rem;"><span class="small"
+                                        style="color:var(--orange)">36–60 bits</span><span class="spacer"></span><span
+                                        class="small">Moderate</span></div>
+                                <div class="prog-bar">
+                                    <div class="prog-fill" style="background:var(--orange);width:60%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="row" style="margin-bottom:.2rem;"><span class="small text-green">60–128
+                                        bits</span><span class="spacer"></span><span class="small">Strong</span></div>
+                                <div class="prog-bar">
+                                    <div class="prog-fill prog-green" style="width:80%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="row" style="margin-bottom:.2rem;"><span class="small text-cyan">128+
+                                        bits</span><span class="spacer"></span><span class="small">Very Strong
+                                        (Cryptographic)</span></div>
+                                <div class="prog-bar">
+                                    <div class="prog-fill prog-cyan" style="width:100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ HASH IDENTIFIER ═══════════ -->
+            <div class="page" id="page-hashid">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">HASH IDENTIFIER</div>
+                        <div class="page-subtitle">// AUTO-DETECT HASH ALGORITHM BY PATTERN</div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">HASH INPUT</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-label">PASTE HASH STRING</div>
+                                <input class="form-input" id="hid-input"
+                                    placeholder="5f4dcc3b5aa765d61d8327deb882cf99..." oninput="identifyHash()"
+                                    style="font-family:var(--mono);font-size:.78rem;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hashIdResults" style="display:none;">
+                        <div class="grid-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">IDENTIFICATION</div>
+                                </div>
+                                <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                    <div>
+                                        <div class="form-label">DETECTED ALGORITHM</div>
+                                        <div class="text-cyan"
+                                            style="font-family:var(--head);font-size:1.2rem;margin-top:.3rem;"
+                                            id="hid-algo">—</div>
+                                    </div>
+                                    <div>
+                                        <div class="form-label">HASH LENGTH</div>
+                                        <div class="mono text-text" id="hid-len">—</div>
+                                    </div>
+                                    <div>
+                                        <div class="form-label">SECURITY LEVEL</div>
+                                        <div id="hid-sec">—</div>
+                                    </div>
+                                    <div>
+                                        <div class="form-label">CRACKABILITY</div>
+                                        <div id="hid-crack">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">ALGORITHM DETAILS</div>
+                                </div>
+                                <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;"
+                                    id="hid-details">—</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">REFERENCE — HASH PATTERNS</div>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ALGORITHM</th>
+                                        <th>LENGTH</th>
+                                        <th>FORMAT</th>
+                                        <th>SECURITY</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>MD5</td>
+                                        <td>32 hex</td>
+                                        <td class="hash-val">5f4dcc3b5aa765d61d8327deb882cf99</td>
+                                        <td><span class="badge badge-critical">BROKEN</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SHA-1</td>
+                                        <td>40 hex</td>
+                                        <td class="hash-val">5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8</td>
+                                        <td><span class="badge badge-weak">WEAK</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SHA-256</td>
+                                        <td>64 hex</td>
+                                        <td class="hash-val">5e884898da28047151d0e56f8dc62927...</td>
+                                        <td><span class="badge badge-moderate">MODERATE</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SHA-512</td>
+                                        <td>128 hex</td>
+                                        <td class="hash-val">b109f3bbbc244eb82441917ed06d618b...</td>
+                                        <td><span class="badge badge-strong">STRONG</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>bcrypt</td>
+                                        <td>60 chars</td>
+                                        <td class="hash-val">$2b$12$...</td>
+                                        <td><span class="badge badge-vstrong">RECOMMENDED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>NTLM</td>
+                                        <td>32 hex</td>
+                                        <td class="hash-val">8846f7eaee8fb117ad06bdd830b7586c</td>
+                                        <td><span class="badge badge-critical">BROKEN</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SHA-512crypt</td>
+                                        <td>variable</td>
+                                        <td class="hash-val">$6$rounds=5000$...</td>
+                                        <td><span class="badge badge-strong">STRONG</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ POLICY CHECKER ═══════════ -->
+            <div class="page" id="page-policy">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">POLICY CHECKER</div>
+                        <div class="page-subtitle">// VALIDATE PASSWORDS AGAINST SECURITY POLICIES</div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">POLICY CONFIGURATION</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div class="form-group">
+                                    <div class="form-label">MINIMUM LENGTH</div>
+                                    <input type="range" class="range-input" id="pol-minlen" min="6" max="32" value="12"
+                                        oninput="document.getElementById('pol-minlen-v').textContent=this.value+' chars';checkPolicy()" />
+                                    <div class="small text-dim" style="margin-top:.3rem;" id="pol-minlen-v">12 chars
+                                    </div>
+                                </div>
+                                <div class="toggle-row"><span class="small">Require uppercase</span><label
+                                        class="toggle"><input type="checkbox" id="pol-upper" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                                <div class="toggle-row"><span class="small">Require lowercase</span><label
+                                        class="toggle"><input type="checkbox" id="pol-lower" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                                <div class="toggle-row"><span class="small">Require numbers</span><label
+                                        class="toggle"><input type="checkbox" id="pol-nums" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                                <div class="toggle-row"><span class="small">Require symbols</span><label
+                                        class="toggle"><input type="checkbox" id="pol-syms" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                                <div class="toggle-row"><span class="small">Block common passwords</span><label
+                                        class="toggle"><input type="checkbox" id="pol-common" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                                <div class="toggle-row"><span class="small">Block repeated chars (aaa)</span><label
+                                        class="toggle"><input type="checkbox" id="pol-repeat" checked
+                                            onchange="checkPolicy()" /><span class="toggle-slider"></span></label></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">TEST PASSWORD</div>
+                            </div>
+                            <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+                                <div class="form-group">
+                                    <div class="form-label">PASSWORD TO CHECK</div>
+                                    <input class="form-input" id="pol-password" placeholder="Enter password..."
+                                        oninput="checkPolicy()" />
+                                </div>
+                                <div id="policyResults" style="display:flex;flex-direction:column;gap:.5rem;">
+                                    <div class="small text-dim">Configure policy and enter a password...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ AUDIT REPORT ═══════════ -->
+            <div class="page" id="page-report">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">AUDIT REPORT</div>
+                        <div class="page-subtitle">// COMPREHENSIVE SECURITY ASSESSMENT EXPORT</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-green" onclick="generateReport()">▶ GENERATE</button>
+                        <button class="btn btn-cyan" onclick="exportReport()">⬇ EXPORT .TXT</button>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">REPORT OUTPUT</div>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="report-block" id="reportOutput">Click GENERATE to create audit report...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ FILE STRUCTURE ═══════════ -->
+            <div class="page" id="page-files">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title text-cyan">FILE STRUCTURE</div>
+                        <div class="page-subtitle">// PROJECT LAYOUT & MODULE ARCHITECTURE</div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">PROJECT TREE</div>
+                            </div>
+                            <div class="file-tree-view">
+                                <span class="ft-folder">passaudit/</span> <span class="ft-comment">← root</span>
+                                │
+                                ├── <span class="ft-folder">modules/</span>
+                                │ ├── <span class="ft-py">dictionary_generator.py</span> <span class="ft-comment">←
+                                    wordlist builder</span>
+                                │ ├── <span class="ft-py">hash_extractor.py</span> <span class="ft-comment">← shadow/SAM
+                                    parser</span>
+                                │ ├── <span class="ft-py">bruteforce_simulator.py</span> <span class="ft-comment">←
+                                    attack engine</span>
+                                │ ├── <span class="ft-py">strength_analyzer.py</span> <span class="ft-comment">← entropy
+                                    + scoring</span>
+                                │ ├── <span class="ft-py">entropy_calculator.py</span> <span class="ft-comment">←
+                                    shannon entropy</span>
+                                │ ├── <span class="ft-py">hash_identifier.py</span> <span class="ft-comment">← algo
+                                    detection</span>
+                                │ ├── <span class="ft-py">policy_checker.py</span> <span class="ft-comment">← policy
+                                    validator</span>
+                                │ └── <span class="ft-py">report_generator.py</span> <span class="ft-comment">← PDF/text
+                                    reports</span>
+                                │
+                                ├── <span class="ft-folder">gui/</span>
+                                │ ├── <span class="ft-folder">static/</span>
+                                │ │ ├── index.html <span class="ft-comment">← this GUI</span>
+                                │ │ ├── style.css
+                                │ │ └── app.js
+                                │ └── <span class="ft-py">server.py</span> <span class="ft-comment">← Flask API
+                                    backend</span>
+                                │
+                                ├── <span class="ft-folder">data/</span>
+                                │ ├── <span class="ft-txt">common_passwords.txt</span> <span class="ft-comment">← top
+                                    10K list</span>
+                                │ ├── <span class="ft-txt">sample_shadow.txt</span> <span class="ft-comment">← demo
+                                    shadow</span>
+                                │ ├── <span class="ft-txt">sample_hashes.txt</span> <span class="ft-comment">← demo
+                                    hashes</span>
+                                │ └── <span class="ft-txt">generated_wordlist.txt</span> <span class="ft-comment">←
+                                    output</span>
+                                │
+                                ├── <span class="ft-folder">output/</span>
+                                │ ├── <span class="ft-txt">audit_report.txt</span>
+                                │ └── <span class="ft-json">results.json</span>
+                                │
+                                ├── <span class="ft-folder">tests/</span>
+                                │ ├── <span class="ft-py">test_generator.py</span>
+                                │ ├── <span class="ft-py">test_analyzer.py</span>
+                                │ ├── <span class="ft-py">test_bruteforce.py</span>
+                                │ └── <span class="ft-py">test_policy.py</span>
+                                │
+                                ├── <span class="ft-py">main.py</span> <span class="ft-comment">← CLI entry point</span>
+                                ├── <span class="ft-json">config.json</span> <span class="ft-comment">← settings</span>
+                                ├── <span class="ft-txt">requirements.txt</span>
+                                └── <span class="ft-md">README.md</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">MODULE DESCRIPTIONS</div>
+                            </div>
+                            <div class="card-body"
+                                style="display:flex;flex-direction:column;gap:.75rem;font-family:var(--mono);font-size:.68rem;">
+                                <div><span class="text-cyan">dictionary_generator.py</span><br /><span
+                                        class="text-dim">Builds targeted wordlists from keywords with leet, upper,
+                                        suffix, prefix mutations. Supports DOB + name combos.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">hash_extractor.py</span><br /><span class="text-dim">Parses
+                                        Linux /etc/shadow and Windows SAM (offline). Identifies MD5, SHA-512, bcrypt,
+                                        NTLM algorithms.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">bruteforce_simulator.py</span><br /><span
+                                        class="text-dim">Simulates dictionary and incremental attacks. Estimates real
+                                        GPU crack times. Ethical limits enforced.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">strength_analyzer.py</span><br /><span
+                                        class="text-dim">Scores 0–100. Checks length, charset diversity, dictionary
+                                        membership, entropy bits.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">entropy_calculator.py</span><br /><span
+                                        class="text-dim">Shannon entropy per character and total bits. Charset size
+                                        analysis. Frequency mapping.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">hash_identifier.py</span><br /><span
+                                        class="text-dim">Auto-detects hash type from length and format patterns. Covers
+                                        15+ algorithms.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">policy_checker.py</span><br /><span
+                                        class="text-dim">Validates against configurable rules: min length, charset
+                                        requirements, common password blocklist.</span></div>
+                                <div class="sep"></div>
+                                <div><span class="text-cyan">report_generator.py</span><br /><span
+                                        class="text-dim">Produces full audit report in .txt and .json with severity
+                                        ratings and policy recommendations.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════════════════
+        // PARTICLE BACKGROUND
+        // ══════════════════════════════════════════════════════════
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        for (let i = 0; i < 60; i++) {
+            particles.push({
+                x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+                vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3,
+                size: Math.random() * 1.5 + .5, opacity: Math.random() * .5 + .1,
+                color: Math.random() > .7 ? '#00e5ff' : Math.random() > .5 ? '#00ff88' : '#ff2d55'
+            });
+        }
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.opacity; ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        // ══════════════════════════════════════════════════════════
+        // CLOCK
+        // ══════════════════════════════════════════════════════════
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockDisplay').textContent =
+                now.toLocaleTimeString('en-US', { hour12: false }) + '  ' + now.toLocaleDateString();
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // ══════════════════════════════════════════════════════════
+        // NAVIGATION
+        // ══════════════════════════════════════════════════════════
+        function navigate(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // NOTIFICATIONS
+        // ══════════════════════════════════════════════════════════
+        function notify(msg, type = 'info') {
+            const icons = { success: '✓', error: '✕', info: 'ℹ', warn: '⚠' };
+            const el = document.createElement('div');
+            el.className = `notif-item n-${type}`;
+            el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+            document.getElementById('notifContainer').appendChild(el);
+            setTimeout(() => { el.style.animation = 'slideIn .3s ease reverse'; setTimeout(() => el.remove(), 300); }, 3000);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // TERMINAL
+        // ══════════════════════════════════════════════════════════
+        function addTermLine(text, type = 'out', termId = 'termOutput') {
+            const term = document.getElementById(termId);
+            const div = document.createElement('div');
+            div.className = 'term-line';
+            div.innerHTML = `<span class="t-${type}">${text}</span>`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+        function addTermCmd(cmd, termId = 'termOutput') {
+            const term = document.getElementById(termId);
+            const div = document.createElement('div');
+            div.className = 'term-line';
+            div.innerHTML = `<span class="t-prompt">passaudit$</span><span class="t-cmd" style="margin-left:.5rem">${cmd}</span>`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        const CMDS = {
+            help: () => { ['Available commands:', '  scan      — run quick audit', '  analyze   — analyze clipboard hash', '  status    — system status', '  clear     — clear terminal', '  wordlist  — show last wordlist stats'].forEach(l => addTermLine(l, 'dim')); },
+            clear: () => { document.getElementById('termOutput').innerHTML = '<div class="term-line"><span class="t-prompt">passaudit$</span><span class="t-dim"> terminal cleared</span></div>'; },
+            scan: () => runQuickScan(),
+            status: () => { addTermLine('  [✓] System: ONLINE', 'out'); addTermLine('  [✓] Modules: 8/8 loaded', 'out'); addTermLine('  [!] Ethical mode: ACTIVE', 'warn'); },
+            wordlist: () => addTermLine('  Last wordlist: ' + document.getElementById('wordCount').textContent, 'out'),
+        };
+        function handleTermInput(e) {
+            if (e.key !== 'Enter') return;
+            const val = e.target.value.trim().toLowerCase();
+            addTermCmd(val);
+            if (CMDS[val]) CMDS[val]();
+            else if (val) addTermLine('  Unknown command. Type "help" for options.', 'err');
+            e.target.value = '';
+        }
+
+        function runQuickScan() {
+            addTermLine('  [*] Running quick scan...', 'warn');
+            const msgs = ['  [+] Checking entropy module...', '  [+] Loading common password list...', '  [+] Hash identifier ready...', '  [+] Policy engine active...', '  [✓] Scan complete — 0 critical issues detected'];
+            let i = 0;
+            const iv = setInterval(() => { if (i < msgs.length) { addTermLine(msgs[i++], i === msgs.length ? 'out' : 'dim'); } else clearInterval(iv); }, 400);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // ACTIVITY LOG
+        // ══════════════════════════════════════════════════════════
+        function logActivity(msg, color = 'var(--cyan)') {
+            const log = document.getElementById('activityLog');
+            const div = document.createElement('div');
+            div.className = 'row';
+            div.style.marginBottom = '.3rem';
+            div.innerHTML = `<span style="color:var(--dim);font-family:var(--mono);font-size:.6rem">${new Date().toLocaleTimeString('en-US', { hour12: false })}</span><span style="font-family:var(--mono);font-size:.65rem;color:${color};margin-left:.5rem">${msg}</span>`;
+            log.insertBefore(div, log.firstChild);
+            if (log.children.length > 20) log.removeChild(log.lastChild);
+        }
+
+        let sessionStats = { cracked: 0, analyzed: 0, wordlist: 0, critical: 0, weak: 0, moderate: 0, strong: 0 };
+        function updateStats() {
+            document.getElementById('stat-cracked').textContent = sessionStats.cracked;
+            document.getElementById('stat-analyzed').textContent = sessionStats.analyzed;
+            document.getElementById('stat-wordlist').textContent = sessionStats.wordlist;
+            const total = sessionStats.critical + sessionStats.weak + sessionStats.moderate + sessionStats.strong || 1;
+            ['critical', 'weak', 'moderate', 'strong'].forEach(k => {
+                const pct = Math.round(sessionStats[k] / total * 100);
+                document.getElementById('d-' + k).textContent = sessionStats[k];
+                document.getElementById('db-' + k).style.width = pct + '%';
+            });
+            const threat = Math.min(100, Math.round((sessionStats.critical * 3 + sessionStats.weak * 2) / Math.max(total, .1) * 50));
+            document.getElementById('threatBar').style.width = threat + '%';
+            const labels = ['LOW', 'MODERATE', 'HIGH', 'CRITICAL'];
+            const ti = Math.min(3, Math.floor(threat / 25));
+            document.getElementById('threatText').textContent = labels[ti] + ' — ' + threat + '%';
+        }
+        function refreshDashboard() { notify('Dashboard refreshed', 'success'); }
+
+        // ══════════════════════════════════════════════════════════
+        // DICTIONARY GENERATOR
+        // ══════════════════════════════════════════════════════════
+        const COMMON = ['password', '123456', 'admin', 'letmein', 'qwerty', 'iloveyou', 'monkey', 'dragon', 'master', 'sunshine', 'princess', 'abc123', 'welcome', 'login', 'pass'];
+        const LEET = { a: '4', e: '3', i: '1', o: '0', s: '5', t: '7', g: '9', b: '8' };
+        const SUFFIXES = ['', '1', '12', '123', '1234', '!', '@', '#', '2024', '2025', '@2024', '#1', '_1'];
+        const PREFIXES = ['', '@', 'the', 'my', 'super'];
+
+        function leet(word) { return word.toLowerCase().split('').map(c => LEET[c] || c).join(''); }
+        function mutate(word, opts) {
+            const variants = new Set([word]);
+            if (opts.lower) variants.add(word.toLowerCase());
+            if (opts.upper) variants.add(word.toUpperCase());
+            if (opts.upper) variants.add(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+            if (opts.leet) { variants.add(leet(word)); variants.add(leet(word).charAt(0).toUpperCase() + leet(word).slice(1)); }
+            const final = new Set();
+            variants.forEach(v => {
+                if (opts.nums) SUFFIXES.forEach(s => final.add(v + s));
+                else final.add(v);
+                if (opts.syms) ['!', '@', '#', '$'].forEach(s => final.add(v + s));
+            });
+            return [...final];
+        }
+
+        function generateWordlist() {
+            const kw = document.getElementById('dict-keywords').value.split(',').map(s => s.trim()).filter(Boolean);
+            const name = document.getElementById('dict-name').value.trim();
+            const dob = document.getElementById('dict-dob').value.trim();
+            if (name) kw.push(name, ...name.split(' '));
+            if (dob) kw.push(dob);
+            const opts = {
+                leet: document.getElementById('mut-leet').checked, upper: document.getElementById('mut-upper').checked,
+                nums: document.getElementById('mut-nums').checked, syms: document.getElementById('mut-syms').checked
+            };
+            const maxSize = parseInt(document.getElementById('dict-size').value);
+            let words = new Set();
+            if (document.getElementById('mut-common').checked) COMMON.forEach(w => words.add(w));
+            kw.forEach(k => { mutate(k, opts).forEach(w => words.add(w)); });
+            if (document.getElementById('mut-combo').checked) {
+                for (let i = 0; i < kw.length; i++)for (let j = 0; j < kw.length; j++)if (i !== j) { words.add(kw[i] + kw[j]); words.add(kw[i] + '_' + kw[j]); }
+            }
+            const list = [...words].slice(0, maxSize);
+            sessionStats.wordlist = list.length; updateStats();
+            const container = document.getElementById('wordlistOutput');
+            container.innerHTML = '';
+            const sample = list.slice(0, 80);
+            sample.forEach(w => {
+                const tag = document.createElement('div');
+                tag.className = 'word-tag' + (kw.some(k => k && w.toLowerCase().includes(k.toLowerCase())) ? ' mutated' : '');
+                tag.textContent = w; container.appendChild(tag);
+            });
+            if (list.length > 80) { const more = document.createElement('div'); more.className = 'word-tag'; more.style.color = 'var(--dim)'; more.textContent = `+${list.length - 80} more`; container.appendChild(more); }
+            document.getElementById('wordCount').textContent = list.length + ' words';
+            document.getElementById('dictStats').textContent = `${kw.length} keywords | ${opts.leet ? 'leet ' : ''}${opts.upper ? 'upper ' : ''}${opts.nums ? 'nums ' : ''}${opts.syms ? 'syms' : ''} | ${list.length} total`;
+            // Mutation preview
+            const previewKw = kw[0] || 'example';
+            const mutations = mutate(previewKw, opts).slice(0, 20);
+            document.getElementById('mutationPreview').innerHTML = `<span class="text-cyan">"${previewKw}"</span> mutations: <br/>` + mutations.map(m => `<span style="color:var(--text);margin-right:.75rem;">${m}</span>`).join('');
+            logActivity(`Wordlist generated: ${list.length} entries`, 'var(--cyan)');
+            notify(`Generated ${list.length} words`, 'success');
+            addTermCmd(`dictgen --keywords "${kw.join(',')}" --mutations all --size ${maxSize}`);
+            addTermLine(`  [+] Generated ${list.length} words from ${kw.length} keywords`, 'out');
+            window._wordlist = list;
+        }
+        function clearWordlist() { document.getElementById('wordlistOutput').innerHTML = '<div style="padding:1rem;font-family:var(--mono);font-size:.65rem;color:var(--dim);">Cleared.</div>'; document.getElementById('wordCount').textContent = '0 words'; window._wordlist = []; }
+        function exportWordlist() {
+            const list = window._wordlist || [];
+            if (!list.length) { notify('Generate a wordlist first', 'warn'); return; }
+            const blob = new Blob([list.join('\n')], { type: 'text/plain' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'generated_wordlist.txt'; a.click();
+            notify('Wordlist exported', 'success');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // HASH ANALYZER
+        // ══════════════════════════════════════════════════════════
+        const HASH_ALGOS = [
+            { prefix: '$2b$', name: 'bcrypt', risk: 'LOW' },
+            { prefix: '$2a$', name: 'bcrypt', risk: 'LOW' },
+            { prefix: '$6$', name: 'SHA-512crypt', risk: 'LOW' },
+            { prefix: '$5$', name: 'SHA-256crypt', risk: 'MODERATE' },
+            { prefix: '$1$', name: 'MD5crypt', risk: 'HIGH' },
+            { prefix: '$y$', name: 'yescrypt', risk: 'LOW' },
+        ];
+        function identifyHashAlgo(h) {
+            for (const a of HASH_ALGOS) if (h.startsWith(a.prefix)) return a;
+            if (/^[a-f0-9]{32}$/i.test(h)) return { name: 'MD5', risk: 'CRITICAL' };
+            if (/^[a-f0-9]{40}$/i.test(h)) return { name: 'SHA-1', risk: 'HIGH' };
+            if (/^[a-f0-9]{64}$/i.test(h)) return { name: 'SHA-256', risk: 'MODERATE' };
+            if (/^[a-f0-9]{128}$/i.test(h)) return { name: 'SHA-512', risk: 'LOW' };
+            if (/^[a-f0-9]{32}$/i.test(h)) return { name: 'NTLM', risk: 'CRITICAL' };
+            return { name: 'Unknown', risk: 'UNKNOWN' };
+        }
+        const RISK_BADGE = { CRITICAL: 'badge-critical', HIGH: 'badge-weak', MODERATE: 'badge-moderate', LOW: 'badge-strong', UNKNOWN: 'badge-weak' };
+        const DEMO_SHADOW = `root:$6$rounds=5000$saltxyz$hashedvalue1234567890:19000:0:99999:7:::
+john:$1$salt$hashedvalue12:19100:0:99999:7:::
+alice:$2b$12$salthashvalue123456789012345678901234:19200:0:99999:7:::
+bob:$5$rounds=5000$salt$hashval:19300:0:99999:7:::
+carol:5f4dcc3b5aa765d61d8327deb882cf99:19400:0:99999:7:::`;
+
+        function loadDemoHashes() { document.getElementById('hashInput').value = DEMO_SHADOW; analyzeHashes(); }
+        function analyzeHashes() {
+            const input = document.getElementById('hashInput').value.trim();
+            if (!input) { notify('Paste hashes first', 'warn'); return; }
+            const lines = input.split('\n').filter(Boolean);
+            const results = [];
+            lines.forEach(line => {
+                const parts = line.split(':');
+                let user = 'unknown', hash = '';
+                if (parts.length >= 2) { user = parts[0]; hash = parts[1]; }
+                else { hash = line; }
+                if (!hash || ['!', '*', 'x'].includes(hash)) return;
+                const algo = identifyHashAlgo(hash);
+                results.push({ user, hash, algo: algo.name, risk: algo.risk });
+            });
+            const tbody = document.getElementById('hashTableBody');
+            tbody.innerHTML = '';
+            const algoCounts = {};
+            results.forEach((r, i) => {
+                algoCounts[r.algo] = (algoCounts[r.algo] || 0) + 1;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${i + 1}</td><td class="text-cyan">${r.user}</td><td>${r.algo}</td><td class="hash-val">${r.hash.substring(0, 35)}${r.hash.length > 35 ? '...' : ''}</td><td><span class="badge ${RISK_BADGE[r.risk] || 'badge-weak'}">${r.risk}</span></td>`;
+                tbody.appendChild(tr);
+            });
+            // Algo breakdown
+            const breakdown = document.getElementById('algoBreakdown');
+            breakdown.innerHTML = '';
+            Object.entries(algoCounts).forEach(([algo, count]) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:.75rem;';
+                div.innerHTML = `<div style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">ALGORITHM</div><div style="font-family:var(--head);color:var(--cyan);font-size:.9rem;margin:.3rem 0">${algo}</div><div style="font-family:var(--mono);font-size:.65rem;color:var(--text)">${count} hash${count > 1 ? 'es' : ''}</div>`;
+                breakdown.appendChild(div);
+            });
+            sessionStats.analyzed += results.length; updateStats();
+            logActivity(`Hash analysis: ${results.length} entries`, 'var(--cyan)');
+            notify(`Analyzed ${results.length} hashes`, 'success');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // BRUTE FORCE SIMULATOR
+        // ══════════════════════════════════════════════════════════
+        let bfInterval = null, bfRunning = false;
+        const DEMO_WORDLIST = ['password', 'admin', 'letmein', 'qwerty', '123456', 'abc123', 'password1', 'welcome', 'monkey', 'dragon', 'master', 'sunshine'];
+
+        function hashStr(str, algo) {
+            // Simple simulation — in real app would call Python backend
+            // Using a deterministic fake hash for demo
+            let h = 0; for (let i = 0; i < str.length; i++) { h = (Math.imul(31, h) + str.charCodeAt(i)) | 0; }
+            const hex = Math.abs(h).toString(16).padStart(8, '0').repeat(4).substring(0, 32);
+            return hex;
+        }
+
+        function startBruteforce() {
+            if (bfRunning) return;
+            bfRunning = true;
+            document.getElementById('bfStartBtn').style.display = 'none';
+            document.getElementById('bfStopBtn').style.display = 'inline-block';
+            document.getElementById('scanStatus').style.display = 'flex';
+            const mode = document.getElementById('bf-mode').value;
+            const speed = parseInt(document.getElementById('bf-speed').value);
+            const algo = document.getElementById('bf-algo').value;
+            const termId = 'bfTermOutput';
+            document.getElementById(termId).innerHTML = '';
+            addTermCmd(`bruteforce --mode ${mode} --algo ${algo} --speed ${speed}`, termId);
+            addTermLine(`  [*] Starting ${mode} attack simulation...`, termId === 'bfTermOutput' ? 'warn' : 'warn');
+
+            let attempts = 0, found = false;
+            const wordlist = DEMO_WORDLIST;
+            const targetWord = wordlist[Math.floor(Math.random() * 5)];
+            const targetHash = hashStr(targetWord);
+
+            addTermLine(`  [*] Target hash: ${targetHash}`, 'dim', termId);
+            addTermLine(`  [*] Mode: ${mode} | Speed: ${speed.toLocaleString()} h/s`, 'dim', termId);
+
+            const total = mode === 'dictionary' ? wordlist.length : 10000;
+            const stepSize = Math.max(1, Math.floor(speed / 100));
+
+            bfInterval = setInterval(() => {
+                if (!bfRunning) { clearInterval(bfInterval); return; }
+                for (let i = 0; i < stepSize && attempts < total; i++) {
+                    const word = mode === 'dictionary' ? wordlist[attempts % wordlist.length] : `try_${attempts}`;
+                    if (hashStr(word) === targetHash && !found) {
+                        found = true;
+                        document.getElementById('bfResult').textContent = targetWord;
+                        document.getElementById('bfResult').style.color = 'var(--red)';
+                        document.getElementById('bfStatus').textContent = 'CRACKED';
+                        addTermLine(`  [CRACKED!] Password found: "${targetWord}" after ${attempts} attempts`, 't-out', termId);
+                        sessionStats.cracked++; updateStats();
+                        logActivity(`Password cracked: ${attempts} attempts`, 'var(--red)');
+                        notify(`Password cracked in ${attempts} attempts`, 'error');
+                        stopBruteforce(); return;
+                    }
+                    attempts++;
+                }
+                const pct = Math.min(100, Math.round(attempts / total * 100));
+                document.getElementById('bfProgress').style.width = pct + '%';
+                document.getElementById('bfPercent').textContent = pct + '%';
+                document.getElementById('bfAttempts').textContent = attempts.toLocaleString();
+                document.getElementById('bfSpeed').textContent = speed.toLocaleString() + ' h/s';
+                document.getElementById('bfStatus').textContent = 'RUNNING';
+                if (attempts >= total && !found) {
+                    addTermLine(`  [-] Not found after ${total} attempts`, 'dim', termId);
+                    stopBruteforce();
+                }
+            }, 100);
+        }
+
+        function stopBruteforce() {
+            bfRunning = false;
+            if (bfInterval) clearInterval(bfInterval);
+            document.getElementById('bfStartBtn').style.display = 'inline-block';
+            document.getElementById('bfStopBtn').style.display = 'none';
+            document.getElementById('scanStatus').style.display = 'none';
+            if (document.getElementById('bfStatus').textContent === 'RUNNING')
+                document.getElementById('bfStatus').textContent = 'STOPPED';
+        }
+
+        function estimateCrackTime() {
+            const pwd = document.getElementById('cte-password').value;
+            if (!pwd) { document.getElementById('crackTimeResults').innerHTML = '<div style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">Type a password...</div>'; return; }
+            let cs = 0;
+            if (/[a-z]/.test(pwd)) cs += 26; if (/[A-Z]/.test(pwd)) cs += 26;
+            if (/[0-9]/.test(pwd)) cs += 10; if (/[^a-zA-Z0-9]/.test(pwd)) cs += 32;
+            const combos = Math.pow(cs || 26, pwd.length);
+            const speeds = [{ label: 'Online Attack', speed: 1000, desc: '10 tries/sec (throttled)' }, { label: 'Offline MD5', speed: 1e9, desc: '1B h/s (GPU)' }, { label: 'Offline bcrypt', speed: 10000, desc: '10K h/s (GPU)' }, { label: 'SHA-512crypt', speed: 500000, desc: '500K h/s (GPU)' }];
+            const container = document.getElementById('crackTimeResults');
+            container.innerHTML = '';
+            speeds.forEach(s => {
+                const secs = combos / s.speed;
+                let time;
+                if (secs < 1) time = '< 1 second';
+                else if (secs < 60) time = secs.toFixed(1) + ' secs';
+                else if (secs < 3600) time = (secs / 60).toFixed(1) + ' mins';
+                else if (secs < 86400) time = (secs / 3600).toFixed(1) + ' hours';
+                else if (secs < 31536000) time = (secs / 86400).toFixed(1) + ' days';
+                else if (secs < 31536000000) time = (secs / 31536000).toFixed(1) + ' years';
+                else time = 'Centuries+';
+                const safe = secs > 3.15e10;
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:.75rem;';
+                div.innerHTML = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-bottom:.3rem">${s.label.toUpperCase()}</div><div style="font-family:var(--head);font-size:.9rem;color:${safe ? 'var(--green)' : 'var(--red)'}">${time}</div><div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-top:.3rem">${s.desc}</div>`;
+                container.appendChild(div);
+            });
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // STRENGTH ANALYZER
+        // ══════════════════════════════════════════════════════════
+        const COMMON_PWDS = new Set(['password', '123456', 'admin', 'letmein', 'qwerty', 'iloveyou', 'monkey', 'dragon', 'abc123', 'welcome', 'login', 'pass', 'master', 'sunshine']);
+
+        function scorePassword(pwd) {
+            let score = 0;
+            const len = pwd.length;
+            score += Math.min(len * 4, 40);
+            const lower = /[a-z]/.test(pwd), upper = /[A-Z]/.test(pwd), nums = /[0-9]/.test(pwd), syms = /[^a-zA-Z0-9]/.test(pwd);
+            if (lower) score += 10; if (upper) score += 10; if (nums) score += 10; if (syms) score += 20;
+            if (COMMON_PWDS.has(pwd.toLowerCase())) score -= 40;
+            if (len < 8) score -= 20; if (len < 6) score -= 20;
+            return { score: Math.max(0, Math.min(100, score)), lower, upper, nums, syms, len };
+        }
+        function entropyBits(pwd) {
+            let cs = 0; if (/[a-z]/.test(pwd)) cs += 26; if (/[A-Z]/.test(pwd)) cs += 26; if (/[0-9]/.test(pwd)) cs += 10; if (/[^a-zA-Z0-9]/.test(pwd)) cs += 32;
+            return cs === 0 ? 0 : Math.log2(cs) * pwd.length;
+        }
+        function getRating(score) {
+            if (score < 25) return ['CRITICAL', 'badge-critical'];
+            if (score < 40) return ['WEAK', 'badge-weak'];
+            if (score < 60) return ['MODERATE', 'badge-moderate'];
+            if (score < 80) return ['STRONG', 'badge-strong'];
+            return ['VERY STRONG', 'badge-vstrong'];
+        }
+
+        function analyzeStrength() {
+            const pwd = document.getElementById('sa-password').value;
+            if (!pwd) {
+                [1, 2, 3, 4, 5].forEach(i => { const s = document.getElementById('seg' + i); s.classList.remove('lit', 's1', 's2', 's3', 's4', 's5'); });
+                document.getElementById('strengthLabel').textContent = 'Enter a password...';
+                document.getElementById('strengthScore').textContent = '';
+                return;
+            }
+            const { score, lower, upper, nums, syms, len } = scorePassword(pwd);
+            const entropy = entropyBits(pwd);
+            const [rating, badgeClass] = getRating(score);
+            const segsLit = Math.ceil(score / 20);
+            [1, 2, 3, 4, 5].forEach(i => {
+                const s = document.getElementById('seg' + i);
+                s.classList.remove('lit', 's1', 's2', 's3', 's4', 's5');
+                if (i <= segsLit) { s.classList.add('lit', 's' + i); }
+            });
+            document.getElementById('strengthLabel').innerHTML = `<span class="badge ${badgeClass}">${rating}</span>`;
+            document.getElementById('strengthScore').textContent = `Score: ${score}/100`;
+            const setProg = (id, val, pid) => { document.getElementById(id).textContent = val; if (pid) document.getElementById(pid).style.width = Math.min(100, val) + '%'; };
+            setProg('m-length', len + ' chars', 'mb-length');
+            document.getElementById('mb-length').style.width = Math.min(100, len / 20 * 100) + '%';
+            document.getElementById('m-lower').textContent = lower ? '✓ Present' : '✕ Missing'; document.getElementById('mb-lower').style.width = lower ? '100%' : '0%';
+            document.getElementById('m-upper').textContent = upper ? '✓ Present' : '✕ Missing'; document.getElementById('mb-upper').style.width = upper ? '100%' : '0%';
+            document.getElementById('m-nums').textContent = nums ? '✓ Present' : '✕ Missing'; document.getElementById('mb-nums').style.width = nums ? '100%' : '0%';
+            document.getElementById('m-syms').textContent = syms ? '✓ Present' : '✕ Missing'; document.getElementById('mb-syms').style.width = syms ? '100%' : '0%';
+            const findings = [];
+            if (len < 8) findings.push({ icon: '✕', msg: 'Too short — minimum 8 characters', color: 'var(--red)' });
+            if (len < 12) findings.push({ icon: '⚠', msg: 'Recommended: 12+ characters', color: 'var(--yellow)' });
+            if (!upper) findings.push({ icon: '✕', msg: 'Add uppercase letters', color: 'var(--red)' });
+            if (!syms) findings.push({ icon: '✕', msg: 'Add special characters (!@#$)', color: 'var(--red)' });
+            if (COMMON_PWDS.has(pwd.toLowerCase())) findings.push({ icon: '✕', msg: 'Found in common password list!', color: 'var(--red)' });
+            if (entropy > 60) findings.push({ icon: '✓', msg: `Good entropy: ${entropy.toFixed(1)} bits`, color: 'var(--green)' });
+            else findings.push({ icon: '⚠', msg: `Low entropy: ${entropy.toFixed(1)} bits`, color: 'var(--yellow)' });
+            if (len >= 12 && upper && lower && nums && syms) findings.push({ icon: '✓', msg: 'Meets strong password policy', color: 'var(--green)' });
+            const container = document.getElementById('auditFindings');
+            container.innerHTML = findings.map(f => `<div class="row"><span style="color:${f.color};font-family:var(--mono);font-size:.75rem">${f.icon}</span><span class="small" style="margin-left:.4rem">${f.msg}</span></div>`).join('');
+
+            // Update session stats
+            const [r] = getRating(score);
+            const key = r.toLowerCase().replace(' ', '');
+            if (key === 'critical') sessionStats.critical++;
+            else if (key === 'weak') sessionStats.weak++;
+            else if (key === 'moderate') sessionStats.moderate++;
+            else sessionStats.strong++;
+            updateStats();
+            logActivity(`Password analyzed: ${rating}`, score < 40 ? 'var(--red)' : score < 60 ? 'var(--yellow)' : 'var(--green)');
+        }
+
+        function bulkAnalyze() {
+            const lines = document.getElementById('bulk-passwords').value.split('\n').filter(Boolean);
+            if (!lines.length) { notify('Enter passwords first', 'warn'); return; }
+            const tbody = document.getElementById('bulkTableBody'); tbody.innerHTML = '';
+            lines.forEach((pwd, i) => {
+                const { score } = scorePassword(pwd);
+                const entropy = entropyBits(pwd);
+                const [rating, badgeClass] = getRating(score);
+                const issues = [];
+                if (pwd.length < 8) issues.push('Too short'); if (!/[A-Z]/.test(pwd)) issues.push('No uppercase');
+                if (!/[^a-zA-Z0-9]/.test(pwd)) issues.push('No symbols'); if (COMMON_PWDS.has(pwd.toLowerCase())) issues.push('Common password');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${i + 1}</td><td style="font-family:var(--mono)">${'•'.repeat(Math.min(pwd.length, 8))} (${pwd.length})</td><td>${score}/100</td><td>${entropy.toFixed(1)} bits</td><td><span class="badge ${badgeClass}">${rating}</span></td><td style="font-size:.6rem;color:var(--red)">${issues.join(', ') || '—'}</td>`;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('bulkResults').style.display = 'block';
+            notify(`Bulk analyzed ${lines.length} passwords`, 'success');
+            logActivity(`Bulk audit: ${lines.length} passwords`, 'var(--cyan)');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // ENTROPY TOOL
+        // ══════════════════════════════════════════════════════════
+        function calcEntropy() {
+            const text = document.getElementById('ent-input').value;
+            if (!text) {
+                document.getElementById('ent-total').textContent = '0';
+                document.getElementById('ent-per').textContent = '0';
+                document.getElementById('ent-charset').textContent = '0';
+                document.getElementById('freqMap').innerHTML = '<span class="text-dim">Enter text to see analysis...</span>';
+                return;
+            }
+            let cs = 0;
+            if (/[a-z]/.test(text)) cs += 26; if (/[A-Z]/.test(text)) cs += 26; if (/[0-9]/.test(text)) cs += 10; if (/[^a-zA-Z0-9]/.test(text)) cs += 32;
+            const bitsPerChar = cs > 0 ? Math.log2(cs) : 0;
+            const total = bitsPerChar * text.length;
+            document.getElementById('ent-total').textContent = total.toFixed(1);
+            document.getElementById('ent-per').textContent = bitsPerChar.toFixed(2);
+            document.getElementById('ent-charset').textContent = cs;
+            // Frequency map
+            const freq = {};[...text].forEach(c => { freq[c] = (freq[c] || 0) + 1; });
+            const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+            const container = document.getElementById('freqMap');
+            container.innerHTML = '';
+            sorted.forEach(([ch, cnt]) => {
+                const pct = Math.round(cnt / text.length * 100);
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:.4rem .6rem;text-align:center;';
+                div.innerHTML = `<div style="font-family:var(--mono);font-size:.9rem;color:var(--cyan)">${ch == ' ' ? 'SPACE' : ch}</div><div style="font-family:var(--mono);font-size:.55rem;color:var(--dim)">${cnt}× (${pct}%)</div>`;
+                container.appendChild(div);
+            });
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // HASH IDENTIFIER
+        // ══════════════════════════════════════════════════════════
+        const HASH_DB = [
+            { len: 32, hex: true, name: 'MD5 / NTLM', security: 'BROKEN', crack: 'Very Easy (<1 min GPU)', desc: 'MD5 is cryptographically broken. NTLM is Microsoft\'s legacy format. Both should never be used for passwords.', rec: 'Replace with bcrypt or Argon2.' },
+            { len: 40, hex: true, name: 'SHA-1', security: 'WEAK', crack: 'Easy (minutes to hours)', desc: 'SHA-1 is deprecated for password storage. Vulnerable to collision attacks.', rec: 'Migrate to SHA-256 minimum, prefer bcrypt.' },
+            { len: 64, hex: true, name: 'SHA-256', security: 'MODERATE', crack: 'Possible (hours to days)', desc: 'Cryptographically secure but too fast for password hashing. GPU can compute billions/sec.', rec: 'Use bcrypt, scrypt, or Argon2 instead.' },
+            { len: 128, hex: true, name: 'SHA-512', security: 'MODERATE', crack: 'Difficult (days to weeks)', desc: 'Very secure hash but still a fast algorithm, not designed for password storage.', rec: 'Pair with salting; prefer purpose-built KDFs.' },
+            { prefix: '$2', name: 'bcrypt', security: 'STRONG', crack: 'Very Hard (years+)', desc: 'Purpose-built for passwords. Built-in salting and adaptive work factor.', rec: 'Excellent choice. Use cost factor 12+.' },
+            { prefix: '$6$', name: 'SHA-512crypt', security: 'STRONG', crack: 'Hard (months)', desc: 'Linux crypt format with SHA-512. Includes rounds parameter for hardening.', rec: 'Good for Linux systems. Use 100k+ rounds.' },
+            { prefix: '$5$', name: 'SHA-256crypt', security: 'MODERATE', crack: 'Moderate', desc: 'Linux crypt with SHA-256.', rec: 'Upgrade to SHA-512crypt or bcrypt.' },
+            { prefix: '$1$', name: 'MD5crypt', security: 'WEAK', crack: 'Easy', desc: 'Old Linux MD5-based crypt. Deprecated.', rec: 'Replace immediately with bcrypt.' },
+        ];
+        const SEC_BADGE = { BROKEN: 'badge-critical', WEAK: 'badge-weak', MODERATE: 'badge-moderate', STRONG: 'badge-strong' };
+
+        function identifyHash() {
+            const h = document.getElementById('hid-input').value.trim();
+            if (!h) { document.getElementById('hashIdResults').style.display = 'none'; return; }
+            let match = null;
+            for (const db of HASH_DB) {
+                if (db.prefix && h.startsWith(db.prefix)) { match = db; break; }
+                if (db.len && db.hex && h.length === db.len && /^[a-f0-9]+$/i.test(h)) { match = db; break; }
+            }
+            if (!match) match = { name: 'Unknown / Custom', security: 'UNKNOWN', crack: 'Cannot determine', desc: 'Hash pattern not recognized.', rec: 'Verify the hash format.' };
+            document.getElementById('hashIdResults').style.display = 'block';
+            document.getElementById('hid-algo').textContent = match.name;
+            document.getElementById('hid-len').textContent = h.length + ' characters';
+            document.getElementById('hid-sec').innerHTML = `<span class="badge ${SEC_BADGE[match.security] || 'badge-weak'}">${match.security}</span>`;
+            document.getElementById('hid-crack').innerHTML = `<span style="font-family:var(--mono);font-size:.72rem">${match.crack}</span>`;
+            document.getElementById('hid-details').innerHTML = `<div><div class="form-label">DESCRIPTION</div><div class="small" style="margin-top:.3rem;line-height:1.6">${match.desc}</div></div><div class="sep"></div><div><div class="form-label">RECOMMENDATION</div><div class="small text-green" style="margin-top:.3rem">${match.rec}</div></div>`;
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // POLICY CHECKER
+        // ══════════════════════════════════════════════════════════
+        function checkPolicy() {
+            const pwd = document.getElementById('pol-password').value;
+            const minLen = parseInt(document.getElementById('pol-minlen').value);
+            const reqUpper = document.getElementById('pol-upper').checked;
+            const reqLower = document.getElementById('pol-lower').checked;
+            const reqNums = document.getElementById('pol-nums').checked;
+            const reqSyms = document.getElementById('pol-syms').checked;
+            const blockCommon = document.getElementById('pol-common').checked;
+            const blockRepeat = document.getElementById('pol-repeat').checked;
+            if (!pwd) { document.getElementById('policyResults').innerHTML = '<div class="small text-dim">Enter a password to check...</div>'; return; }
+            const checks = [
+                { name: `Min length (${minLen}+ chars)`, pass: pwd.length >= minLen, show: true },
+                { name: 'Contains uppercase', pass: /[A-Z]/.test(pwd), show: reqUpper },
+                { name: 'Contains lowercase', pass: /[a-z]/.test(pwd), show: reqLower },
+                { name: 'Contains numbers', pass: /[0-9]/.test(pwd), show: reqNums },
+                { name: 'Contains symbols', pass: /[^a-zA-Z0-9]/.test(pwd), show: reqSyms },
+                { name: 'Not a common password', pass: !COMMON_PWDS.has(pwd.toLowerCase()), show: blockCommon },
+                { name: 'No repeated chars (aaa)', pass: !/(.)\1{2,}/.test(pwd), show: blockRepeat },
+            ].filter(c => c.show);
+            const passed = checks.filter(c => c.pass).length;
+            const container = document.getElementById('policyResults');
+            container.innerHTML = `<div class="row" style="margin-bottom:.5rem;"><span class="small">COMPLIANCE</span><span class="spacer"></span><span class="small ${passed === checks.length ? 'text-green' : 'text-red'}">${passed}/${checks.length} checks passed</span></div><div class="prog-bar" style="margin-bottom:.75rem;"><div class="prog-fill ${passed === checks.length ? 'prog-green' : 'prog-red'}" style="width:${Math.round(passed / checks.length * 100)}%"></div></div>` +
+                checks.map(c => `<div class="row"><span style="color:${c.pass ? 'var(--green)' : 'var(--red)'};font-family:var(--mono);font-size:.75rem">${c.pass ? '✓' : '✕'}</span><span class="small" style="margin-left:.4rem">${c.name}</span></div>`).join('');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // REPORT GENERATOR
+        // ══════════════════════════════════════════════════════════
+        function generateReport() {
+            const ts = new Date().toLocaleString();
+            const report = `╔══════════════════════════════════════════════════════════════╗
+║          PASSAUDIT — SECURITY AUDIT REPORT                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+Generated  : ${ts}
+Tool       : PassAudit v2.0 GUI Edition
+Mode       : Ethical Lab Assessment
+
+═══════════════════════════════════════════════════════════════
+SESSION SUMMARY
+═══════════════════════════════════════════════════════════════
+
+  Passwords Cracked   : ${sessionStats.cracked}
+  Hashes Analyzed     : ${sessionStats.analyzed}
+  Wordlist Generated  : ${sessionStats.wordlist} entries
+
+  STRENGTH DISTRIBUTION:
+  ├── CRITICAL  : ${sessionStats.critical}
+  ├── WEAK      : ${sessionStats.weak}
+  ├── MODERATE  : ${sessionStats.moderate}
+  └── STRONG    : ${sessionStats.strong}
+
+═══════════════════════════════════════════════════════════════
+RISK ASSESSMENT
+═══════════════════════════════════════════════════════════════
+
+  ${sessionStats.critical > 0 ? '[HIGH RISK] Critical passwords found — immediate action required!' : '[LOW RISK]  No critical passwords detected in this session'}
+  ${sessionStats.weak > 0 ? `[MODERATE]  ${sessionStats.weak} weak password(s) identified` : '[OK]        No weak passwords detected'}
+  ${sessionStats.cracked > 0 ? `[ALERT]     ${sessionStats.cracked} password(s) cracked via simulation` : '[OK]        No passwords cracked in this session'}
+
+═══════════════════════════════════════════════════════════════
+HASH SECURITY FINDINGS
+═══════════════════════════════════════════════════════════════
+
+  CRITICAL ALGORITHMS (requires immediate replacement):
+  ✕ MD5     — Cryptographically broken, GPU cracks in seconds
+  ✕ NTLM    — Microsoft legacy, trivially crackable
+  ✕ SHA-1   — Deprecated, collision attacks possible
+
+  ACCEPTABLE ALGORITHMS:
+  ✓ bcrypt   — Recommended, adaptive work factor
+  ✓ Argon2   — Modern KDF, memory-hard
+  ✓ scrypt   — Memory-hard, strong against GPU attacks
+  ✓ SHA-512crypt — Acceptable for Linux systems (high rounds)
+
+═══════════════════════════════════════════════════════════════
+POLICY RECOMMENDATIONS
+═══════════════════════════════════════════════════════════════
+
+  [1] Enforce minimum 12-character password length
+  [2] Require uppercase, lowercase, digits, and symbols
+  [3] Block all passwords in common password lists
+  [4] Implement account lockout after 5 failed attempts
+  [5] Enable Multi-Factor Authentication (MFA)
+  [6] Replace MD5/NTLM/SHA-1 hashing with bcrypt/Argon2
+  [7] Enforce 90-day password rotation policy
+  [8] Monitor auth logs for brute-force patterns
+  [9] Use salted hashes — never store plaintext
+  [10] Audit privileged accounts (root/admin) monthly
+
+═══════════════════════════════════════════════════════════════
+COMPLIANCE NOTES
+═══════════════════════════════════════════════════════════════
+
+  NIST SP 800-63B: Minimum 8 chars, no complexity mandated
+  OWASP: bcrypt/scrypt/Argon2 required for storage
+  ISO 27001: Annual credential audits required
+  PCI-DSS: Min 7 chars, complexity required, 90-day rotation
+
+═══════════════════════════════════════════════════════════════
+                       END OF REPORT
+═══════════════════════════════════════════════════════════════`;
+            document.getElementById('reportOutput').textContent = report;
+            document.getElementById('reportBadge').style.display = 'none';
+            logActivity('Audit report generated', 'var(--cyan)');
+            notify('Audit report ready', 'success');
+            addTermLine('  [+] Audit report generated', 'out');
+        }
+
+        function exportReport() {
+            const content = document.getElementById('reportOutput').textContent;
+            if (content.includes('Click GENERATE')) { notify('Generate report first', 'warn'); return; }
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'passaudit_report.txt'; a.click();
+            notify('Report exported', 'success');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // INIT
+        // ══════════════════════════════════════════════════════════
+        updateStats();
+        // Show report badge after 5s to invite exploration
+        setTimeout(() => { document.getElementById('reportBadge').style.display = 'inline-block'; }, 5000);
+    </script>
+</body>
+
+</html>

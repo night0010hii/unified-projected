@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SentinelShield — Advanced IDS/WAF Console</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&family=Exo+2:wght@300;400;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+    <div class="scanline"></div>
+    <div class="vignette"></div>
+
+    <!-- BOOT SCREEN -->
+    <div id="bootScreen">
+        <div class="boot-content">
+            <div class="boot-logo">🛡</div>
+            <div class="boot-title">SENTINELSHIELD</div>
+            <div class="boot-sub">ADVANCED INTRUSION DETECTION &amp; WEB APPLICATION FIREWALL — v2.0</div>
+            <div class="boot-bar-wrap">
+                <div class="boot-bar">
+                    <div class="boot-fill" id="bootFill"></div>
+                </div>
+            </div>
+            <div class="boot-log" id="bootLog"></div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appShell" class="hidden">
+
+        <nav class="topnav">
+            <div class="nav-brand">
+                <span class="brand-shield">🛡</span>
+                <div>
+                    <div class="brand-name">SENTINELSHIELD</div>
+                    <div class="brand-ver">IDS / WAF CONSOLE v2.0</div>
+                </div>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">⬡
+                    Dashboard</button>
+                <button class="nav-tab" data-tab="simulator" onclick="switchTab('simulator')">⚡ Simulator</button>
+                <button class="nav-tab" data-tab="analyzer" onclick="switchTab('analyzer')">🔬 Analyzer</button>
+                <button class="nav-tab" data-tab="rules" onclick="switchTab('rules')">📋 Rules</button>
+                <button class="nav-tab" data-tab="logs" onclick="switchTab('logs')">📜 Logs</button>
+                <button class="nav-tab" data-tab="report" onclick="switchTab('report')">📊 Report</button>
+            </div>
+            <div class="nav-right">
+                <div class="sys-status"><span class="health-dot" id="healthDot"></span><span
+                        id="sysStatus">PROTECTED</span></div>
+                <div class="nav-clock" id="navClock">00:00:00</div>
+                <div class="threat-badge" id="threatBadge">THREAT: LOW</div>
+            </div>
+        </nav>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="hero-stats">
+                <div class="hstat">
+                    <div class="hstat-icon">⬡</div>
+                    <div class="hstat-val" id="hs-total">0</div>
+                    <div class="hstat-lbl">Total Requests</div>
+                </div>
+                <div class="hstat danger">
+                    <div class="hstat-icon">🚫</div>
+                    <div class="hstat-val" id="hs-blocked">0</div>
+                    <div class="hstat-lbl">Threats Blocked</div>
+                </div>
+                <div class="hstat safe">
+                    <div class="hstat-icon">✓</div>
+                    <div class="hstat-val" id="hs-allowed">0</div>
+                    <div class="hstat-lbl">Allowed</div>
+                </div>
+                <div class="hstat warn">
+                    <div class="hstat-icon">⏱</div>
+                    <div class="hstat-val" id="hs-rate">0</div>
+                    <div class="hstat-lbl">Rate Limited</div>
+                </div>
+                <div class="hstat info">
+                    <div class="hstat-icon">⊕</div>
+                    <div class="hstat-val" id="hs-ips">0</div>
+                    <div class="hstat-lbl">Unique IPs</div>
+                </div>
+                <div class="hstat purple">
+                    <div class="hstat-icon">⚑</div>
+                    <div class="hstat-val" id="hs-rules">0</div>
+                    <div class="hstat-lbl">Rules Active</div>
+                </div>
+            </div>
+
+            <div class="dash-grid">
+                <div class="dash-card radar-card">
+                    <div class="card-hdr"><span class="card-title">THREAT RADAR</span><span class="cbadge live">●
+                            LIVE</span></div>
+                    <div class="radar-wrap">
+                        <canvas id="radarCanvas" width="240" height="240"></canvas>
+                        <div class="radar-center" id="radarLabel">SECURE</div>
+                    </div>
+                    <div class="radar-legend">
+                        <span class="rl sql">● SQL</span><span class="rl xss">● XSS</span>
+                        <span class="rl lfi">● LFI</span><span class="rl cmd">● CMD</span><span class="rl trav">●
+                            TRAV</span>
+                    </div>
+                </div>
+
+                <div class="dash-card timeline-card">
+                    <div class="card-hdr"><span class="card-title">ATTACK TIMELINE</span><span class="cbadge">LAST 40
+                            EVENTS</span></div>
+                    <canvas id="timelineCanvas" width="560" height="160"></canvas>
+                </div>
+
+                <div class="dash-card gauge-card">
+                    <div class="card-hdr"><span class="card-title">BLOCK RATE</span></div>
+                    <div class="gauge-wrap">
+                        <canvas id="gaugeCanvas" width="180" height="110"></canvas>
+                        <div class="gauge-val" id="gaugeVal">0%</div>
+                    </div>
+                    <div class="threat-meter">
+                        <div class="tm-label">THREAT LEVEL</div>
+                        <div class="tm-bars">
+                            <div class="tm-bar" id="tmb1"></div>
+                            <div class="tm-bar" id="tmb2"></div>
+                            <div class="tm-bar" id="tmb3"></div>
+                            <div class="tm-bar" id="tmb4"></div>
+                            <div class="tm-bar" id="tmb5"></div>
+                        </div>
+                        <div class="tm-text" id="tmText">LOW</div>
+                    </div>
+                </div>
+
+                <div class="dash-card breakdown-card">
+                    <div class="card-hdr"><span class="card-title">ATTACK BREAKDOWN</span></div>
+                    <div id="breakdownChart" class="breakdown-list"></div>
+                </div>
+
+                <div class="dash-card feed-card">
+                    <div class="card-hdr"><span class="card-title">LIVE THREAT FEED</span><span class="cbadge live">●
+                            LIVE</span></div>
+                    <div id="threatFeed" class="threat-feed"></div>
+                </div>
+
+                <div class="dash-card ip-card">
+                    <div class="card-hdr"><span class="card-title">TOP OFFENDERS</span></div>
+                    <div id="ipLeaderboard" class="ip-leader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIMULATOR TAB -->
+        <div id="tab-simulator" class="tab-content">
+            <div class="sim-layout">
+                <div class="dash-card builder-card">
+                    <div class="card-hdr"><span class="card-title">⚡ REQUEST BUILDER</span></div>
+                    <div class="field-row2">
+                        <div class="field"><label>IP ADDRESS</label><input type="text" id="simIP" class="inp"
+                                value="192.168.1.100" /></div>
+                        <div class="field" style="max-width:120px"><label>METHOD</label>
+                            <select id="simMethod" class="inp">
+                                <option>GET</option>
+                                <option>POST</option>
+                                <option>PUT</option>
+                                <option>DELETE</option>
+                                <option>OPTIONS</option>
+                            </select>
+                        </div>
+                        <div class="field" style="max-width:120px"><label>PORT</label><input type="text" id="simPort"
+                                class="inp" value="80" /></div>
+                    </div>
+                    <div class="field"><label>REQUEST PATH / URL</label><input type="text" id="simURL" class="inp"
+                            value="/index.php" /></div>
+                    <div class="field"><label>REQUEST HEADERS</label><textarea id="simHeaders" class="inp" rows="2"
+                            placeholder="Authorization: Bearer token&#10;X-Forwarded-For: 10.0.0.1"></textarea></div>
+                    <div class="field"><label>BODY / PAYLOAD</label><textarea id="simBody" class="inp" rows="3"
+                            placeholder="key=value&attack=payload"></textarea></div>
+                    <div class="field-row2">
+                        <div class="field"><label>USER-AGENT</label><input type="text" id="simUA" class="inp"
+                                value="Mozilla/5.0 (Windows NT 10.0)" /></div>
+                        <div class="field"><label>COOKIE</label><input type="text" id="simCookie" class="inp"
+                                placeholder="session=abc123" /></div>
+                    </div>
+                    <div class="sim-actions">
+                        <button class="btn-fire" onclick="fireRequest()">⚡ FIRE REQUEST</button>
+                        <button class="btn-ghost" onclick="clearSim()">↺ RESET</button>
+                        <button class="btn-ghost" onclick="randomRequest()">⚄ RANDOM</button>
+                    </div>
+                    <div class="presets-section">
+                        <div class="presets-title">⚠ ATTACK PRESETS</div>
+                        <div class="presets-grid">
+                            <button class="pset sql" onclick="loadPreset('sqli')">SQL INJECTION</button>
+                            <button class="pset xss" onclick="loadPreset('xss')">XSS ATTACK</button>
+                            <button class="pset lfi" onclick="loadPreset('lfi')">LFI / PATH</button>
+                            <button class="pset cmd" onclick="loadPreset('cmd')">CMD INJECT</button>
+                            <button class="pset trav" onclick="loadPreset('traversal')">DIR TRAVERSAL</button>
+                            <button class="pset brute" onclick="loadPreset('brute')">BRUTE FORCE ×10</button>
+                            <button class="pset xxe" onclick="loadPreset('xxe')">XXE ATTACK</button>
+                            <button class="pset ssrf" onclick="loadPreset('ssrf')">SSRF ATTACK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sim-right">
+                    <div class="dash-card result-card">
+                        <div class="card-hdr"><span class="card-title">🔍 DETECTION RESULT</span></div>
+                        <div id="resultDisplay" class="result-display">
+                            <div class="rd-idle">
+                                <div class="rd-shield">🛡</div>
+                                <div class="rd-wait">Awaiting Request…</div>
+                                <div class="rd-sub">Configure and fire a request to see real-time WAF analysis</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dash-card dissect-card">
+                        <div class="card-hdr"><span class="card-title">🔬 PACKET DISSECTION</span></div>
+                        <div id="packetDissect" class="packet-dissect">
+                            <div class="pd-empty">No packet captured</div>
+                        </div>
+                    </div>
+                    <div class="dash-card hist-card">
+                        <div class="card-hdr"><span class="card-title">📋 SESSION HISTORY</span><button class="card-btn"
+                                onclick="clearHistory()">CLEAR</button></div>
+                        <div id="sessionHistory" class="session-hist"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYZER TAB -->
+        <div id="tab-analyzer" class="tab-content">
+            <div class="analyzer-layout">
+                <div class="dash-card" style="flex:1.2">
+                    <div class="card-hdr"><span class="card-title">🔬 DEEP PACKET ANALYZER</span></div>
+                    <div class="field"><label>PASTE RAW HTTP REQUEST</label>
+                        <textarea id="rawPacket" class="inp" rows="14"
+                            placeholder="POST /login HTTP/1.1&#10;Host: example.com&#10;Content-Type: application/x-www-form-urlencoded&#10;Cookie: session=abc&#10;&#10;username=admin'+OR+1=1--&amp;password=x"></textarea>
+                    </div>
+                    <button class="btn-fire" style="width:100%;margin-top:10px" onclick="analyzePacket()">🔬 ANALYZE
+                        PACKET</button>
+                    <div class="card-hdr" style="margin-top:18px"><span class="card-title">DECODED LAYERS</span></div>
+                    <div id="decodedLayers" class="decoded-layers"></div>
+                </div>
+                <div class="dash-card" style="flex:1">
+                    <div class="card-hdr"><span class="card-title">ANALYSIS REPORT</span></div>
+                    <div id="analyzerResult" class="analyzer-result">
+                        <div class="pd-empty">Paste a raw HTTP request and click Analyze</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RULES TAB -->
+        <div id="tab-rules" class="tab-content">
+            <div class="rules-layout">
+                <div class="dash-card" style="flex:1.6">
+                    <div class="card-hdr"><span class="card-title">📋 ACTIVE DETECTION RULES</span>
+                        <div style="display:flex;gap:8px"><button class="card-btn" onclick="openRuleEditor()">+ NEW
+                                RULE</button><button class="card-btn danger" onclick="resetRules()">RESET ALL</button>
+                        </div>
+                    </div>
+                    <div id="rulesTable" class="rules-table"></div>
+                </div>
+                <div class="dash-card rule-editor" id="ruleEditorPanel">
+                    <div class="card-hdr"><span class="card-title">✎ RULE EDITOR</span></div>
+                    <div class="field"><label>RULE NAME</label><input type="text" id="reName" class="inp"
+                            placeholder="e.g. Custom SQLi Pattern" /></div>
+                    <div class="field"><label>CATEGORY KEY</label><input type="text" id="reKey" class="inp"
+                            placeholder="e.g. sqli" /></div>
+                    <div class="field"><label>REGEX PATTERN (JS)</label><textarea id="rePattern" class="inp" rows="3"
+                            placeholder="/UNION.*SELECT/i"></textarea></div>
+                    <div class="field-row2">
+                        <div class="field"><label>SEVERITY</label>
+                            <select id="reSeverity" class="inp">
+                                <option value="critical">CRITICAL</option>
+                                <option value="high">HIGH</option>
+                                <option value="medium" selected>MEDIUM</option>
+                                <option value="low">LOW</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>ACTION</label>
+                            <select id="reAction" class="inp">
+                                <option value="block">BLOCK</option>
+                                <option value="alert">ALERT ONLY</option>
+                                <option value="log">LOG ONLY</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field"><label>DESCRIPTION</label><input type="text" id="reDesc" class="inp"
+                            placeholder="Brief description of this rule" /></div>
+                    <button class="btn-fire" style="width:100%;margin-top:8px" onclick="saveRule()">💾 SAVE
+                        RULE</button>
+                    <div id="ruleSaveMsg" class="save-msg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGS TAB -->
+        <div id="tab-logs" class="tab-content">
+            <div style="padding:0 20px 20px">
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <span class="card-title">📜 SECURITY EVENT LOG</span>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                            <select id="logFilter" class="inp-sm" onchange="filterLogs()">
+                                <option value="all">ALL EVENTS</option>
+                                <option value="blocked">BLOCKED</option>
+                                <option value="allowed">ALLOWED</option>
+                                <option value="ratelimit">RATE LIMITED</option>
+                            </select>
+                            <select id="logCatFilter" class="inp-sm" onchange="filterLogs()">
+                                <option value="all">ALL CATEGORIES</option>
+                                <option value="sqli">SQL Injection</option>
+                                <option value="xss">XSS</option>
+                                <option value="lfi">LFI</option>
+                                <option value="cmd">CMD Inject</option>
+                                <option value="traversal">Traversal</option>
+                            </select>
+                            <input type="text" id="logSearch" class="inp-sm" placeholder="🔍 Search IP / path…"
+                                oninput="filterLogs()" />
+                            <button class="card-btn" onclick="exportLogs()">⬇ EXPORT CSV</button>
+                            <button class="card-btn danger" onclick="clearLogs()">✕ CLEAR</button>
+                        </div>
+                    </div>
+                    <div class="log-head-row">
+                        <span>#</span><span>TIME</span><span>IP</span><span>METHOD</span><span>STATUS</span><span>CATEGORY</span><span>PATH</span><span>BODY
+                            SNIPPET</span>
+                    </div>
+                    <div id="logTable" class="log-table"></div>
+                    <div class="log-footer" id="logFooter">0 events</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORT TAB -->
+        <div id="tab-report" class="tab-content">
+            <div style="padding:0 20px 20px">
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <span class="card-title">📊 SESSION SECURITY REPORT</span>
+                        <div style="display:flex;gap:8px">
+                            <button class="card-btn" onclick="generateReport()">↻ GENERATE</button>
+                            <button class="card-btn" onclick="exportReport()">⬇ EXPORT TXT</button>
+                        </div>
+                    </div>
+                    <div id="reportContent" class="report-content">
+                        <div class="pd-empty">Click GENERATE to create your session report</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /appShell -->
+
+    <script src="logger.js"></script>
+    <script src="waf.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

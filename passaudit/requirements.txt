@@ -1,0 +1,28 @@
+# ─────────────────────────────────────────────────────────────────
+# PassAudit v2.0 — Python Dependencies
+# Install: pip install -r requirements.txt
+# Python  : 3.10+
+# ─────────────────────────────────────────────────────────────────
+
+# ── Core modules use standard library only ───────────────────────
+# hashlib, math, string, itertools, re, json, os,
+# collections, time, argparse, sys — all built-in, no pip needed
+
+# ── Optional: enhanced password hashing (for hash verification) ──
+passlib[bcrypt]==1.7.4
+
+# ── Optional: rich terminal output (coloured tables, progress bars)
+rich==13.7.1
+
+# ── Optional: progress bars for long wordlist generation ─────────
+tqdm==4.66.4
+
+# ── Optional: PDF report export ──────────────────────────────────
+reportlab==4.2.0
+
+# ── Optional: Flask web server (to serve the GUI via browser) ────
+flask==3.0.3
+
+# ── Testing ──────────────────────────────────────────────────────
+pytest==8.2.0
+pytest-cov==5.0.0

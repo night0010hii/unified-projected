@@ -1,0 +1,547 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap');
+
+:root {
+    --bg: #080810;
+    --surface: #0e0e1a;
+    --surface2: #14142b;
+    --border: #1e1e3a;
+    --text: #d0d0e8;
+    --muted: #555580;
+    --accent: #00ff88;
+    --accent2: #7b2fff;
+    --critical: #ff2d55;
+    --high: #ff9500;
+    --medium: #ffd60a;
+    --low: #30d158;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    min-height: 100vh;
+}
+
+/* ── NAVBAR ─────────────────────────────── */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+}
+
+.nav-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+}
+
+.nav-badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--accent);
+}
+
+/* ── MAIN ────────────────────────────────── */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ── HEADER ROW ─────────────────────────── */
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+/* ── SCAN BUTTON ─────────────────────────── */
+.scan-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.scan-btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.scan-btn:disabled {
+    background: #1e3a2a;
+    color: var(--accent);
+    cursor: not-allowed;
+}
+
+.scan-btn.scanning {
+    animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
+    }
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0, 255, 136, 0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── PROGRESS ───────────────────────────── */
+.scan-progress {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.progress-bar-wrap {
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    animation: progress-run 2s ease-in-out infinite;
+    width: 40%;
+}
+
+@keyframes progress-run {
+    0% {
+        transform: translateX(-100%);
+        width: 40%;
+    }
+
+    50% {
+        width: 60%;
+    }
+
+    100% {
+        transform: translateX(300%);
+        width: 40%;
+    }
+}
+
+.progress-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.progress-label strong {
+    color: var(--accent);
+}
+
+/* ── BANNERS ─────────────────────────────── */
+.edu-banner {
+    background: rgba(123, 47, 255, 0.08);
+    border: 1px solid rgba(123, 47, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-bottom: 1.5rem;
+}
+
+.edu-banner strong {
+    color: #a78bfa;
+}
+
+.error-banner {
+    background: rgba(255, 45, 85, 0.08);
+    border: 1px solid var(--critical);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--critical);
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+}
+
+/* ── STATS GRID ──────────────────────────── */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+}
+
+.stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+}
+
+.risk-card {
+    padding: 0.8rem;
+}
+
+/* ── RISK METER ──────────────────────────── */
+.risk-meter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.risk-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* ── FINDINGS ────────────────────────────── */
+.findings-section {
+    margin-top: 1rem;
+}
+
+.findings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ── FILTER PILLS ────────────────────────── */
+.filter-pills {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.filter-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.filter-pill.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 255, 136, 0.06);
+}
+
+/* ── RESULTS ─────────────────────────────── */
+.results-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.module-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.module-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+}
+
+.module-name {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--accent);
+}
+
+.module-count {
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.module-findings {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+/* ── FINDING ROW ─────────────────────────── */
+.finding-row {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.finding-row:hover {
+    border-color: var(--accent);
+}
+
+.finding-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.9rem;
+    cursor: pointer;
+    gap: 0.5rem;
+}
+
+.finding-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.finding-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.sev-badge {
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+}
+
+.finding-title {
+    font-size: 0.82rem;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.module-chip {
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+}
+
+.exploit-chip {
+    font-size: 0.65rem;
+    color: var(--high);
+    border: 1px solid var(--high);
+    padding: 0.12rem 0.4rem;
+    border-radius: 3px;
+}
+
+.expand-icon {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* ── FINDING DETAIL ──────────────────────── */
+.finding-detail {
+    background: var(--surface2);
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    animation: slide-down 0.15s ease;
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}
+
+.detail-label {
+    font-size: 0.68rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.detail-text {
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.detail-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #7dd3fc;
+    background: var(--bg);
+    padding: 0.5rem 0.7rem;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    word-break: break-all;
+    display: block;
+}
+
+.mitigation {
+    color: var(--low);
+}
+
+.cve-link {
+    color: var(--critical);
+    font-size: 0.8rem;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.cve-link:hover {
+    text-decoration: underline;
+}
+
+/* ── EMPTY ───────────────────────────────── */
+.no-findings,
+.empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 3rem;
+    font-size: 0.85rem;
+}
+
+.no-findings {
+    color: var(--low);
+    font-size: 1rem;
+}

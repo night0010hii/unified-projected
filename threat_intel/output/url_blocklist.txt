@@ -1,0 +1,8 @@
+# Threat Intel Aggregator — URL Blocklist
+# Total entries: 5
+#
+http://malware-c2.ru/payload.exe
+http://phishing-login.xyz/steal.php
+http://185.220.101.45/dropper.sh
+https://evil-domain-test.com/gate.php
+http://update-flash-player.biz/install.exe

@@ -1,0 +1,123 @@
+[
+  {
+    "timestamp": "2026-03-21T13:12:27.386931",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\safe\\readme.txt",
+    "destination_path": "",
+    "sensitive": false,
+    "file_hash": "d1bf80994ba019c1fdc4ea8dce91f7b6171a0960acbb1be1c1acf7b2d38b82f3",
+    "filename": "readme.txt",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:27.502072",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\safe\\config.ini",
+    "destination_path": "",
+    "sensitive": false,
+    "file_hash": "1514e0cf2d8cf6d612db790e2de80b0a33e115e3cf0e742bb50d933032130ee5",
+    "filename": "config.ini",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:27.619987",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\safe\\build.sh",
+    "destination_path": "",
+    "sensitive": false,
+    "file_hash": "9cdcc02d53193e2241a40cc83cb127bd328a7b5aadcd8cfde638747d5143794a",
+    "filename": "build.sh",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:27.743641",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\safe\\notes.txt",
+    "destination_path": "",
+    "sensitive": false,
+    "file_hash": "b5b3e03710b5026eacf2c84158f4ba77172297b1adfb0d2f59470fd398c1a48e",
+    "filename": "notes.txt",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:27.862469",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\safe\\index.html",
+    "destination_path": "",
+    "sensitive": false,
+    "file_hash": "2a55e92e2ac4ddf2c890c315f5c09587a1c8ef123296e3e2731da6a9b55d9b7e",
+    "filename": "index.html",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:27.978621",
+    "time_display": "13:12:27",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\employees.csv",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "fd9fc13f2c80f8da5095f927d77afdf4d2c0f4c59a58ac37fd867321260bc37c",
+    "filename": "employees.csv",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:28.145535",
+    "time_display": "13:12:28",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\database_backup.sql",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "40bb8e06a13796a015f682c38d2ad0cec64b7dee9233cd7b2471864b1e0844fd",
+    "filename": "database_backup.sql",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:28.311594",
+    "time_display": "13:12:28",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\financial_report.xlsx",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "2008d00bd80138a5fad300f506b6e9983cf376fb6de11ae5e388338558e3be15",
+    "filename": "financial_report.xlsx",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:28.479074",
+    "time_display": "13:12:28",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\api_keys.env",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "539b9d2205802e54b6c6abb0911ad256e9528f4420c7f4590655d703bfa81b9c",
+    "filename": "api_keys.env",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:28.645137",
+    "time_display": "13:12:28",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\contract_2024.pdf",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "c7f131f987e7526bfd1d68d470b61c448b136a712e76ea5eeb8af5a82c958a71",
+    "filename": "contract_2024.pdf",
+    "integrity": ""
+  },
+  {
+    "timestamp": "2026-03-21T13:12:28.814695",
+    "time_display": "13:12:28",
+    "event_type": "CREATED",
+    "source_path": "C:\\Users\\ADMIN\\Desktop\\unified-project\\demo_files\\sensitive\\medical_records.docx",
+    "destination_path": "",
+    "sensitive": true,
+    "file_hash": "77568f355c128c09ee760be6a19d899beb33746a02f99a330f9df0d6b1225b62",
+    "filename": "medical_records.docx",
+    "integrity": ""
+  }
+]

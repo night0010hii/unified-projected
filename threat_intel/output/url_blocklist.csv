@@ -1,0 +1,6 @@
+value,severity,sources,count
+http://malware-c2.ru/payload.exe,MEDIUM,sample_feed.json|sample_mixed.csv,2
+http://phishing-login.xyz/steal.php,MEDIUM,sample_feed.json|sample_mixed.csv,2
+http://185.220.101.45/dropper.sh,LOW,sample_mixed.csv,1
+https://evil-domain-test.com/gate.php,LOW,sample_mixed.csv,1
+http://update-flash-player.biz/install.exe,LOW,sample_feed.json,1

@@ -1,0 +1,117 @@
+{
+  "feed_name": "synthetic-soc-feed",
+  "generated": "2024-11-01T00:00:00Z",
+  "indicators": [
+    {
+      "type": "ip",
+      "value": "185.220.101.45",
+      "tags": ["tor", "c2"],
+      "confidence": "high"
+    },
+    {
+      "type": "ip",
+      "value": "194.165.16.100",
+      "tags": ["scanner"],
+      "confidence": "high"
+    },
+    {
+      "type": "ip",
+      "value": "45.142.212.100",
+      "tags": ["botnet"],
+      "confidence": "medium"
+    },
+    {
+      "type": "ip",
+      "value": "198.96.155.3",
+      "tags": ["proxy"],
+      "confidence": "medium"
+    },
+    {
+      "type": "ip",
+      "value": "162.247.72.199",
+      "tags": ["tor-exit"],
+      "confidence": "high"
+    },
+    {
+      "type": "domain",
+      "value": "malware-c2.ru",
+      "tags": ["c2", "malware"],
+      "confidence": "high"
+    },
+    {
+      "type": "domain",
+      "value": "phishing-login.xyz",
+      "tags": ["phishing"],
+      "confidence": "high"
+    },
+    {
+      "type": "domain",
+      "value": "ransomware-c2-server.net",
+      "tags": ["ransomware", "c2"],
+      "confidence": "high"
+    },
+    {
+      "type": "domain",
+      "value": "invoice-payment-required.cc",
+      "tags": ["phishing", "finance"],
+      "confidence": "medium"
+    },
+    {
+      "type": "url",
+      "value": "http://malware-c2.ru/payload.exe",
+      "tags": ["malware-download"],
+      "confidence": "high"
+    },
+    {
+      "type": "url",
+      "value": "http://phishing-login.xyz/steal.php",
+      "tags": ["credential-harvesting"],
+      "confidence": "high"
+    },
+    {
+      "type": "url",
+      "value": "http://update-flash-player.biz/install.exe",
+      "tags": ["fake-update"],
+      "confidence": "medium"
+    },
+    {
+      "type": "hash",
+      "value": "44d88612fea8a8f36de82e1278abb02f",
+      "hash_type": "md5",
+      "tags": ["trojan"],
+      "confidence": "high"
+    },
+    {
+      "type": "hash",
+      "value": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+      "hash_type": "sha256",
+      "tags": ["ransomware"],
+      "confidence": "high"
+    },
+    {
+      "type": "hash",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_type": "sha256",
+      "tags": ["empty-file"],
+      "confidence": "low"
+    },
+    {
+      "type": "ip",
+      "value": "91.108.4.200",
+      "tags": ["malware-dropper"],
+      "confidence": "high"
+    },
+    {
+      "type": "domain",
+      "value": "secure-webmail-access.net",
+      "tags": ["phishing", "webmail"],
+      "confidence": "medium"
+    },
+    {
+      "type": "ip",
+      "value": "5.2.69.50",
+      "tags": ["c2"],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrivEsc Toolkit — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080810;
+            --surface: #0e0e1a;
+            --surface2: #14142b;
+            --border: #1e1e3a;
+            --text: #d0d0e8;
+            --muted: #555580;
+            --accent: #00ff88;
+            --accent2: #7b2fff;
+            --crit: #ff2d55;
+            --high: #ff9500;
+            --med: #ffd60a;
+            --low: #30d158;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            min-height: 100vh;
+        }
+
+        /* ── NAV ────────────────────────────────────── */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 56px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .nav-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+
+        .nav-badge {
+            font-size: .58rem;
+            padding: .12rem .35rem;
+            border: 1px solid var(--accent2);
+            color: var(--accent2);
+            border-radius: 3px;
+        }
+
+        .nav-api {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: .78rem;
+        }
+
+        .nav-api:hover {
+            color: var(--accent);
+        }
+
+        /* ── MAIN ───────────────────────────────────── */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .page-sub {
+            color: var(--muted);
+            font-size: .78rem;
+            margin-top: .2rem;
+        }
+
+        /* ── BUTTON ─────────────────────────────────── */
+        #scanBtn {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .7rem 1.5rem;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: .85rem;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+        }
+
+        #scanBtn:hover:not(:disabled) {
+            opacity: .88;
+            transform: translateY(-1px);
+        }
+
+        #scanBtn:disabled {
+            background: #1e3a2a;
+            color: var(--accent);
+            cursor: not-allowed;
+        }
+
+        #scanBtn.scanning {
+            animation: pulseGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, .3);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
+            }
+        }
+
+        .spinner {
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(0, 255, 136, .3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── BANNERS ────────────────────────────────── */
+        .edu-banner {
+            background: rgba(123, 47, 255, .08);
+            border: 1px solid rgba(123, 47, 255, .25);
+            border-radius: 8px;
+            padding: .75rem 1rem;
+            color: var(--muted);
+            font-size: .76rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .edu-banner strong {
+            color: #a78bfa;
+        }
+
+        .error-banner {
+            background: rgba(255, 45, 85, .08);
+            border: 1px solid var(--crit);
+            border-radius: 8px;
+            padding: .75rem 1rem;
+            color: var(--crit);
+            font-size: .8rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* ── PROGRESS ───────────────────────────────── */
+        #progressWrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .progress-bg {
+            background: var(--surface2);
+            border-radius: 4px;
+            height: 4px;
+            overflow: hidden;
+            margin-bottom: .5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 4px;
+            animation: progressRun 2s ease-in-out infinite;
+            width: 40%;
+        }
+
+        @keyframes progressRun {
+            0% {
+                transform: translateX(-100%);
+                width: 40%;
+            }
+
+            50% {
+                width: 60%;
+            }
+
+            100% {
+                transform: translateX(300%);
+                width: 40%;
+            }
+        }
+
+        #moduleLabel {
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        #moduleLabel span {
+            color: var(--accent);
+        }
+
+        /* ── STATS ──────────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            transition: border-color .2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+        }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .4rem;
+        }
+
+        .risk-card {
+            padding: .8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .risk-label {
+            font-size: .68rem;
+            font-weight: 700;
+            margin-top: .2rem;
+            letter-spacing: .05em;
+        }
+
+        /* ── FILTER ─────────────────────────────────── */
+        #findingsSection {
+            display: none;
+        }
+
+        .findings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            padding: .28rem .75rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: none;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .pill.active {
+            background: rgba(0, 255, 136, .06);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── RESULTS ────────────────────────────────── */
+        #resultsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .module-group {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .module-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .65rem 1rem;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mod-name {
+            font-weight: 700;
+            font-size: .8rem;
+            color: var(--accent);
+        }
+
+        .mod-count {
+            font-size: .7rem;
+            color: var(--muted);
+        }
+
+        .module-findings {
+            padding: .5rem;
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+        }
+
+        /* ── FINDING ROW ────────────────────────────── */
+        .finding-row {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: border-color .15s;
+        }
+
+        .finding-row:hover {
+            border-color: rgba(0, 255, 136, .4);
+        }
+
+        .finding-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .65rem .9rem;
+            cursor: pointer;
+            gap: .5rem;
+        }
+
+        .finding-left {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .finding-right {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-shrink: 0;
+        }
+
+        .sev-badge {
+            padding: .13rem .45rem;
+            border-radius: 4px;
+            font-size: .62rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .finding-title {
+            font-size: .8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mod-chip {
+            font-size: .62rem;
+            color: var(--muted);
+            background: var(--surface2);
+            padding: .12rem .35rem;
+            border-radius: 3px;
+        }
+
+        .exploit-chip {
+            font-size: .62rem;
+            color: var(--high);
+            border: 1px solid var(--high);
+            padding: .1rem .35rem;
+            border-radius: 3px;
+        }
+
+        .expand-icon {
+            color: var(--muted);
+            font-size: .85rem;
+            transition: transform .2s;
+        }
+
+        .finding-row.open .expand-icon {
+            transform: rotate(90deg);
+        }
+
+        .finding-detail {
+            background: var(--surface2);
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            gap: .8rem;
+            animation: slideDown .15s ease;
+        }
+
+        .finding-row.open .finding-detail {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+        }
+
+        .detail-lbl {
+            font-size: .65rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: .3rem;
+        }
+
+        .detail-txt {
+            font-size: .78rem;
+            line-height: 1.65;
+        }
+
+        .detail-code {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            color: #7dd3fc;
+            background: var(--bg);
+            padding: .45rem .65rem;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            word-break: break-all;
+        }
+
+        .mitigation-code {
+            color: var(--low);
+        }
+
+        .cve-link {
+            color: var(--crit);
+            font-size: .78rem;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .cve-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-findings {
+            text-align: center;
+            color: var(--low);
+            padding: 2.5rem;
+            font-size: .95rem;
+            display: none;
+        }
+
+        .empty-filter {
+            text-align: center;
+            color: var(--muted);
+            padding: 2rem;
+            font-size: .82rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">
+            <span>🔍</span>
+            <span class="nav-title">PrivEsc Toolkit</span>
+            <span class="nav-badge">DETECTION ONLY</span>
+        </div>
+        <a href="http://localhost:5000/api/scan/list" target="_blank" class="nav-api">API ↗</a>
+    </nav>
+
+    <main>
+
+        <div class="header-row">
+            <div>
+                <h1 class="page-title">System Audit</h1>
+                <p class="page-sub">Linux Privilege Escalation Detection</p>
+            </div>
+            <button id="scanBtn" onclick="startScan()">
+                <div class="spinner" id="spinner"></div>
+                <span id="btnText">⚡ Start Scan</span>
+            </button>
+        </div>
+
+        <div id="progressWrap">
+            <div class="progress-bg">
+                <div class="progress-fill"></div>
+            </div>
+            <p id="moduleLabel">
+                Running: <span id="moduleName">Initializing...</span>
+            </p>
+        </div>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <div class="edu-banner">
+            🛡️ <strong>For authorized security auditing and educational use only.</strong>
+            Do not run on systems you do not own or have explicit written permission to test.
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="statTotal" style="color:#e0e0e0">—</div>
+                <div class="stat-lbl">Total Findings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statCrit" style="color:var(--crit)">—</div>
+                <div class="stat-lbl">Critical</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statHigh" style="color:var(--high)">—</div>
+                <div class="stat-lbl">High</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statMed" style="color:var(--med)">—</div>
+                <div class="stat-lbl">Medium</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statLow" style="color:var(--low)">—</div>
+                <div class="stat-lbl">Low</div>
+            </div>
+            <div class="stat-card risk-card">
+                <svg width="96" height="96" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#1e1e2e" stroke-width="8" />
+                    <circle id="riskArc" cx="50" cy="50" r="45" fill="none" stroke="var(--low)" stroke-width="8"
+                        stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="282.7"
+                        transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 1s ease,stroke .5s ease" />
+                    <text id="riskNum" x="50" y="47" text-anchor="middle" fill="var(--low)" font-size="18"
+                        font-weight="bold" font-family="'JetBrains Mono',monospace">0</text>
+                    <text x="50" y="60" text-anchor="middle" fill="#555" font-size="8"
+                        font-family="'JetBrains Mono',monospace">/100</text>
+                </svg>
+                <div class="risk-label" id="riskLabel" style="color:var(--low)">
+                    No Scan
+                </div>
+            </div>
+        </div>
+
+        <div class="no-findings" id="noFindings">
+            ✅ No vulnerabilities detected. System looks well-configured!
+        </div>
+
+        <div id="findingsSection">
+            <div class="findings-header">
+                <h2 class="section-title">Findings</h2>
+                <div class="filter-pills">
+                    <button class="pill active" onclick="setFilter('ALL',this)">ALL</button>
+                    <button class="pill" onclick="setFilter('CRITICAL',this)">CRITICAL</button>
+                    <button class="pill" onclick="setFilter('HIGH',this)">HIGH</button>
+                    <button class="pill" onclick="setFilter('MEDIUM',this)">MEDIUM</button>
+                    <button class="pill" onclick="setFilter('LOW',this)">LOW</button>
+                </div>
+            </div>
+            <div id="resultsContainer"></div>
+        </div>
+
+    </main>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let allFindings = [], pollTimer = null, currentFilter = 'ALL';
+
+        const SC = {
+            CRITICAL: '#ff2d55', HIGH: '#ff9500',
+            MEDIUM: '#ffd60a', LOW: '#30d158'
+        };
+        const ST = {
+            CRITICAL: '#fff', HIGH: '#fff',
+            MEDIUM: '#000', LOW: '#fff'
+        };
+
+        /* ── RISK METER ───────────────────────────── */
+        function updateRiskMeter(score) {
+            const circ = 282.7;
+            const offset = circ - (score / 100) * circ;
+            const col = score < 25 ? 'var(--low)'
+                : score < 50 ? 'var(--med)'
+                    : score < 75 ? 'var(--high)'
+                        : 'var(--crit)';
+            const lbl = score === 0 ? 'No Scan'
+                : score < 25 ? 'Low Risk'
+                    : score < 50 ? 'Medium Risk'
+                        : score < 75 ? 'High Risk'
+                            : 'Critical';
+
+            document.getElementById('riskArc').style.strokeDashoffset = offset;
+            document.getElementById('riskArc').style.stroke = col;
+            document.getElementById('riskNum').textContent = score;
+            document.getElementById('riskNum').setAttribute('fill', col);
+            document.getElementById('riskLabel').textContent = lbl;
+            document.getElementById('riskLabel').style.color = col;
+        }
+
+        /* ── STATS ────────────────────────────────── */
+        function updateStats(s) {
+            document.getElementById('statTotal').textContent = s.total ?? 0;
+            document.getElementById('statCrit').textContent = s.critical ?? 0;
+            document.getElementById('statHigh').textContent = s.high ?? 0;
+            document.getElementById('statMed').textContent = s.medium ?? 0;
+            document.getElementById('statLow').textContent = s.low ?? 0;
+            updateRiskMeter(s.risk_score ?? 0);
+        }
+
+        /* ── HELPERS ──────────────────────────────── */
+        function esc(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ── RENDER ───────────────────────────────── */
+        function renderFindings(findings) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+
+            if (!findings.length) {
+                container.innerHTML =
+                    '<p class="empty-filter">No findings match this filter.</p>';
+                return;
+            }
+
+            const groups = {};
+            findings.forEach(f => {
+                const m = f.module || 'Other';
+                if (!groups[m]) groups[m] = [];
+                groups[m].push(f);
+            });
+
+            Object.entries(groups).forEach(([mod, items]) => {
+                const g = document.createElement('div');
+                g.className = 'module-group';
+                g.innerHTML = `
+      <div class="module-group-header">
+        <span class="mod-name">${esc(mod)}</span>
+        <span class="mod-count">
+          ${items.length} finding${items.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+      <div class="module-findings" id="mf-${CSS.escape(mod)}"></div>`;
+                container.appendChild(g);
+
+                const mf = g.querySelector('.module-findings');
+                items.forEach(f => {
+                    const sev = f.severity || 'LOW';
+                    const bg = SC[sev] || '#888';
+                    const tc = ST[sev] || '#fff';
+                    const row = document.createElement('div');
+                    row.className = 'finding-row';
+                    row.innerHTML = `
+        <div class="finding-main"
+             onclick="this.parentElement.classList.toggle('open')">
+          <div class="finding-left">
+            <span class="sev-badge"
+                  style="background:${bg};color:${tc}">${sev}</span>
+            <span class="finding-title"
+                  title="${esc(f.title || '')}">
+              ${esc(f.title || 'Unknown')}
+            </span>
+          </div>
+          <div class="finding-right">
+            <span class="mod-chip">${esc(f.module || '')}</span>
+            ${f.exploitation_possible
+                            ? '<span class="exploit-chip">⚠️ Exploitable</span>'
+                            : ''}
+            <span class="expand-icon">▸</span>
+          </div>
+        </div>
+        <div class="finding-detail">
+          <div>
+            <div class="detail-lbl">Description</div>
+            <p class="detail-txt">${esc(f.description || '')}</p>
+          </div>
+          ${f.path ? `
+          <div>
+            <div class="detail-lbl">Path</div>
+            <code class="detail-code">${esc(f.path)}</code>
+          </div>` : ''}
+          ${f.cve ? `
+          <div>
+            <div class="detail-lbl">CVE</div>
+            <a class="cve-link"
+               href="https://nvd.nist.gov/vuln/detail/${esc(f.cve)}"
+               target="_blank">${esc(f.cve)} ↗</a>
+          </div>` : ''}
+          <div>
+            <div class="detail-lbl">Mitigation</div>
+            <code class="detail-code mitigation-code">
+              ${esc(f.mitigation || 'Review manually.')}
+            </code>
+          </div>
+        </div>`;
+                    mf.appendChild(row);
+                });
+            });
+        }
+
+        /* ── FILTER ───────────────────────────────── */
+        function setFilter(sev, btn) {
+            currentFilter = sev;
+            document.querySelectorAll('.pill')
+                .forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const filtered = sev === 'ALL'
+                ? allFindings
+                : allFindings.filter(f => f.severity === sev);
+            renderFindings(filtered);
+        }
+
+        /* ── SCAN ─────────────────────────────────── */
+        async function startScan() {
+            const btn = document.getElementById('scanBtn');
+            const txt = document.getElementById('btnText');
+            const spin = document.getElementById('spinner');
+            const prog = document.getElementById('progressWrap');
+            const errBn = document.getElementById('errorBanner');
+            const noFin = document.getElementById('noFindings');
+            const finSec = document.getElementById('findingsSection');
+
+            btn.disabled = true;
+            btn.classList.add('scanning');
+            txt.textContent = 'Scanning...';
+            spin.style.display = 'block';
+            prog.style.display = 'block';
+            errBn.style.display = 'none';
+            noFin.style.display = 'none';
+            finSec.style.display = 'none';
+            allFindings = [];
+            document.getElementById('resultsContainer').innerHTML = '';
+
+            let scanId;
+            try {
+                const res = await fetch(`${API}/scan/start`, { method: 'POST' });
+                const data = await res.json();
+                scanId = data.scan_id;
+            } catch (e) {
+                showError(
+                    'Cannot connect to backend. ' +
+                    'Run: cd backend && python app.py'
+                );
+                resetBtn();
+                return;
+            }
+
+            pollTimer = setInterval(async () => {
+                try {
+                    const sr = await fetch(`${API}/scan/status/${scanId}`);
+                    const sd = await sr.json();
+
+                    if (sd.current_module) {
+                        document.getElementById('moduleName').textContent =
+                            sd.current_module;
+                    }
+                    if (sd.summary && Object.keys(sd.summary).length) {
+                        updateStats(sd.summary);
+                    }
+
+                    if (sd.status === 'complete') {
+                        clearInterval(pollTimer);
+                        const rr = await fetch(`${API}/scan/results/${scanId}`);
+                        const rd = await rr.json();
+                        allFindings = rd.findings || [];
+                        updateStats(rd.summary || {});
+                        prog.style.display = 'none';
+                        resetBtn();
+
+                        if (allFindings.length === 0) {
+                            noFin.style.display = 'block';
+                        } else {
+                            finSec.style.display = 'block';
+                            renderFindings(allFindings);
+                        }
+                    }
+                } catch (e) {
+                    clearInterval(pollTimer);
+                    showError('Lost connection during scan.');
+                    resetBtn();
+                }
+            }, 1500);
+        }
+
+        function showError(msg) {
+            const b = document.getElementById('errorBanner');
+            b.textContent = '⚠️ ' + msg;
+            b.style.display = 'block';
+        }
+
+        function resetBtn() {
+            const btn = document.getElementById('scanBtn');
+            const txt = document.getElementById('btnText');
+            const spin = document.getElementById('spinner');
+            btn.disabled = false;
+            btn.classList.remove('scanning');
+            txt.textContent = '⚡ Start Scan';
+            spin.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

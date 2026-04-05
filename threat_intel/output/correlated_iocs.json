@@ -1,0 +1,604 @@
+[
+  {
+    "type": "ip",
+    "value": "185.220.101.45",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "45.142.212.100",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "91.108.4.200",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "194.165.16.100",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "malware-c2.ru",
+    "sources": [
+      "sample_domains.txt",
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "phishing-login.xyz",
+    "sources": [
+      "sample_domains.txt",
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "ransomware-c2-server.net",
+    "sources": [
+      "sample_domains.txt",
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 3,
+    "severity": "HIGH",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "5.188.86.172",
+    "sources": [
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "80.82.77.139",
+    "sources": [
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "198.96.155.3",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "103.208.86.8",
+    "sources": [
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "193.32.162.157",
+    "sources": [
+      "sample_ips.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "162.247.72.199",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "5.2.69.50",
+    "sources": [
+      "sample_feed.json",
+      "sample_ips.txt"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "invoice-payment-required.cc",
+    "sources": [
+      "sample_domains.txt",
+      "sample_feed.json"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "cdn-delivery-node.ru",
+    "sources": [
+      "sample_domains.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "secure-webmail-access.net",
+    "sources": [
+      "sample_domains.txt",
+      "sample_feed.json"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "wp-admin-login.tk",
+    "sources": [
+      "sample_domains.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "evil-domain-test.com",
+    "sources": [
+      "sample_domains.txt",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "url",
+    "value": "http://malware-c2.ru/payload.exe",
+    "sources": [
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "url",
+    "value": "http://phishing-login.xyz/steal.php",
+    "sources": [
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "md5",
+    "value": "44d88612fea8a8f36de82e1278abb02f",
+    "sources": [
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "sha256",
+    "value": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+    "sources": [
+      "sample_feed.json",
+      "sample_mixed.csv"
+    ],
+    "count": 2,
+    "severity": "MEDIUM",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "185.220.101.46",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "195.78.54.32",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "185.56.80.65",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "23.129.64.130",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "51.75.62.55",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "194.48.251.3",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "45.148.10.240",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "80.82.77.142",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "185.220.100.255",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "45.142.122.100",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "91.108.56.100",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "185.100.87.72",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "ip",
+    "value": "193.169.252.120",
+    "sources": [
+      "sample_ips.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545017+00:00",
+    "last_seen": "2026-04-02T19:36:58.545017+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "updates-microsoft-security.net",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "bankofamerica-secure-login.com",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "paypal-verification-required.org",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "dropbox-sharedfile.biz",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "googledrivesupport.info",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "tracking-parcel-dhl.xyz",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "cpanel-hosting-management.ml",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "remote-desktop-access.ga",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "bitly.com.redirect.ml",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "tinyurl.net.fake.xyz",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "malware-dropper.ru",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "domain",
+    "value": "spyware-install.biz",
+    "sources": [
+      "sample_domains.txt"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.545985+00:00",
+    "last_seen": "2026-04-02T19:36:58.545985+00:00"
+  },
+  {
+    "type": "url",
+    "value": "http://185.220.101.45/dropper.sh",
+    "sources": [
+      "sample_mixed.csv"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "url",
+    "value": "https://evil-domain-test.com/gate.php",
+    "sources": [
+      "sample_mixed.csv"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.546747+00:00",
+    "last_seen": "2026-04-02T19:36:58.546747+00:00"
+  },
+  {
+    "type": "url",
+    "value": "http://update-flash-player.biz/install.exe",
+    "sources": [
+      "sample_feed.json"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.547775+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  },
+  {
+    "type": "sha256",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sources": [
+      "sample_feed.json"
+    ],
+    "count": 1,
+    "severity": "LOW",
+    "first_seen": "2026-04-02T19:36:58.547775+00:00",
+    "last_seen": "2026-04-02T19:36:58.547775+00:00"
+  }
+]

@@ -1,0 +1,23 @@
+# Threat Intel Aggregator — Domain Blocklist
+# Total entries: 20
+#
+malware-c2.ru
+phishing-login.xyz
+ransomware-c2-server.net
+invoice-payment-required.cc
+cdn-delivery-node.ru
+secure-webmail-access.net
+wp-admin-login.tk
+evil-domain-test.com
+updates-microsoft-security.net
+bankofamerica-secure-login.com
+paypal-verification-required.org
+dropbox-sharedfile.biz
+googledrivesupport.info
+tracking-parcel-dhl.xyz
+cpanel-hosting-management.ml
+remote-desktop-access.ga
+bitly.com.redirect.ml
+tinyurl.net.fake.xyz
+malware-dropper.ru
+spyware-install.biz
