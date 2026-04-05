@@ -1,0 +1,43 @@
+2026-04-06 03:40:34,947 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.101:5000
+2026-04-06 03:40:34,947 [INFO] [33mPress CTRL+C to quit[0m
+2026-04-06 03:41:13,340 [INFO] [46c4330c] Running: SUID/SGID Binaries
+2026-04-06 03:41:13,340 [INFO] Scan 46c4330c started
+2026-04-06 03:41:13,341 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:13] "POST /api/scan/start HTTP/1.1" 200 -
+2026-04-06 03:41:13,362 [INFO] [46c4330c] Running: File Permissions
+2026-04-06 03:41:13,372 [INFO] [46c4330c] Running: Cron Jobs
+2026-04-06 03:41:13,373 [INFO] [46c4330c] Running: System Services
+2026-04-06 03:41:13,376 [INFO] [46c4330c] Running: Kernel Vulnerabilities
+2026-04-06 03:41:13,377 [INFO] [46c4330c] Running: Sudo Misconfigurations
+2026-04-06 03:41:13,379 [ERROR] Report generation failed: 'charmap' codec can't encode character '\U0001f50d' in position 1687: character maps to <undefined>
+2026-04-06 03:41:13,379 [INFO] [46c4330c] Done — 0 findings.
+2026-04-06 03:41:14,851 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:14] "GET /api/scan/status/46c4330c HTTP/1.1" 200 -
+2026-04-06 03:41:15,164 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:15] "GET /api/scan/results/46c4330c HTTP/1.1" 200 -
+2026-04-06 03:41:30,513 [INFO] [0cbd7bb0] Running: SUID/SGID Binaries
+2026-04-06 03:41:30,513 [INFO] Scan 0cbd7bb0 started
+2026-04-06 03:41:30,514 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:30] "POST /api/scan/start HTTP/1.1" 200 -
+2026-04-06 03:41:30,530 [INFO] [0cbd7bb0] Running: File Permissions
+2026-04-06 03:41:30,539 [INFO] [0cbd7bb0] Running: Cron Jobs
+2026-04-06 03:41:30,541 [INFO] [0cbd7bb0] Running: System Services
+2026-04-06 03:41:30,544 [INFO] [0cbd7bb0] Running: Kernel Vulnerabilities
+2026-04-06 03:41:30,545 [INFO] [0cbd7bb0] Running: Sudo Misconfigurations
+2026-04-06 03:41:30,550 [ERROR] Report generation failed: 'charmap' codec can't encode character '\U0001f50d' in position 1687: character maps to <undefined>
+2026-04-06 03:41:30,550 [INFO] [0cbd7bb0] Done — 0 findings.
+2026-04-06 03:41:32,328 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:32] "GET /api/scan/status/0cbd7bb0 HTTP/1.1" 200 -
+2026-04-06 03:41:32,593 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:32] "GET /api/scan/results/0cbd7bb0 HTTP/1.1" 200 -
+2026-04-06 03:41:34,537 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:34] "GET /api/scan/list HTTP/1.1" 200 -
+2026-04-06 03:41:34,694 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:34] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-04-06 03:41:42,617 [INFO] [025dbb2e] Running: SUID/SGID Binaries
+2026-04-06 03:41:42,617 [INFO] Scan 025dbb2e started
+2026-04-06 03:41:42,618 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:42] "POST /api/scan/start HTTP/1.1" 200 -
+2026-04-06 03:41:42,634 [INFO] [025dbb2e] Running: File Permissions
+2026-04-06 03:41:42,642 [INFO] [025dbb2e] Running: Cron Jobs
+2026-04-06 03:41:42,644 [INFO] [025dbb2e] Running: System Services
+2026-04-06 03:41:42,646 [INFO] [025dbb2e] Running: Kernel Vulnerabilities
+2026-04-06 03:41:42,647 [INFO] [025dbb2e] Running: Sudo Misconfigurations
+2026-04-06 03:41:42,649 [ERROR] Report generation failed: 'charmap' codec can't encode character '\U0001f50d' in position 1687: character maps to <undefined>
+2026-04-06 03:41:42,649 [INFO] [025dbb2e] Done — 0 findings.
+2026-04-06 03:41:44,442 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:44] "GET /api/scan/status/025dbb2e HTTP/1.1" 200 -
+2026-04-06 03:41:44,707 [INFO] 127.0.0.1 - - [06/Apr/2026 03:41:44] "GET /api/scan/results/025dbb2e HTTP/1.1" 200 -

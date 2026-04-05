@@ -1,0 +1,13 @@
+{
+  "scan_id": "0cbd7bb0",
+  "generated_at": "2026-04-05T22:11:30.549316",
+  "summary": {
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "risk_score": 0
+  },
+  "findings": []
+}
